@@ -284,6 +284,22 @@
         gap: 8px;
         margin-top: 10px;
       }
+      .place-link {
+        appearance: none;
+        border: 0;
+        border-bottom: 1px dotted currentColor;
+        background: transparent;
+        color: var(--blue);
+        cursor: pointer;
+        font: inherit;
+        font-weight: 800;
+        padding: 0;
+      }
+      .place-link:hover,
+      .place-link:focus {
+        color: #0b4ea2;
+        outline: none;
+      }
       .footer {
         color: #777;
         font-size: 12px;
@@ -498,7 +514,10 @@
           <div class="time">11:25</div>
           <div class="icon">🛬</div>
           <div>
-            <b>ถึง Kansai International Airport (KIX)</b
+            <b
+              ><button class="place-link" type="button" data-map-place="kix">
+                ถึง Kansai International Airport (KIX)
+              </button></b
             ><br />ลงเครื่องแล้วเดินตามป้าย
             <b>Arrivals / Immigration</b> ไม่ต้องรีบ เดินตามคนส่วนใหญ่ได้
           </div>
@@ -564,17 +583,35 @@
           <div class="time">14:00</div>
           <div class="icon">🏨</div>
           <div>
-            <b>ถึง Namba → ไปโรงแรม</b><br />เปิด Google Maps ค้นหา
-            <b>ZONE SHINSAIBASHI WEST</b> แล้วเลือกเดิน ใช้เวลาประมาณ 10–20
-            นาทีตามทางออกที่เลือก
+            <b
+              ><button class="place-link" type="button" data-map-place="namba">
+                ถึง Namba
+              </button>
+              → ไปโรงแรม</b
+            ><br />เปิด Google Maps ค้นหา
+            <b
+              ><button class="place-link" type="button" data-map-place="hotel">
+                ZONE SHINSAIBASHI WEST
+              </button></b
+            >
+            แล้วเลือกเดิน ใช้เวลาประมาณ 10–20 นาทีตามทางออกที่เลือก
           </div>
         </div>
         <div class="step">
           <div class="time">15:30</div>
           <div class="icon">🚶</div>
           <div>
-            <b>เดินย่าน Dotonbori / Shinsaibashi</b><br />วันนี้เน้นเดินสำรวจ
-            ซื้อของใช้ ของกิน น้ำดื่ม และทำความคุ้นกับเมือง
+            <b
+              ><button
+                class="place-link"
+                type="button"
+                data-map-place="dotonbori"
+              >
+                เดินย่าน Dotonbori
+              </button>
+              / Shinsaibashi</b
+            ><br />วันนี้เน้นเดินสำรวจ ซื้อของใช้ ของกิน น้ำดื่ม
+            และทำความคุ้นกับเมือง
           </div>
         </div>
         <div class="box">
@@ -601,7 +638,16 @@
           <div class="icon">🚶</div>
           <div>
             <b>ออกจากโรงแรม</b><br />เปิด Google Maps ค้นหา
-            <b>Fushimi Inari Taisha</b> เลือกเส้นทางรถไฟ
+            <b
+              ><button
+                class="place-link"
+                type="button"
+                data-map-place="fushimi"
+              >
+                Fushimi Inari Taisha
+              </button></b
+            >
+            เลือกเส้นทางรถไฟ
           </div>
         </div>
         <details open>
@@ -629,15 +675,31 @@
           <div class="time">08:30</div>
           <div class="icon">⛩️</div>
           <div>
-            <b>Fushimi Inari</b><br />ถ่ายรูปเสาแดง เดินขึ้นตามแรงไหว
-            ไม่ต้องขึ้นจนสุดเขาก็ได้
+            <b
+              ><button
+                class="place-link"
+                type="button"
+                data-map-place="fushimi"
+              >
+                Fushimi Inari
+              </button></b
+            ><br />ถ่ายรูปเสาแดง เดินขึ้นตามแรงไหว ไม่ต้องขึ้นจนสุดเขาก็ได้
           </div>
         </div>
         <div class="step">
           <div class="time">11:00</div>
           <div class="icon">🚆</div>
           <div>
-            <b>ไป Kiyomizu-dera</b><br />จาก Fushimi Inari ขึ้น Keihan ไป
+            <b
+              >ไป
+              <button
+                class="place-link"
+                type="button"
+                data-map-place="kiyomizu"
+              >
+                Kiyomizu-dera
+              </button></b
+            ><br />จาก Fushimi Inari ขึ้น Keihan ไป
             <b>Kiyomizu-Gojo</b> แล้วเดินขึ้นย่านวัด/ถนนเก่า
           </div>
         </div>
@@ -645,16 +707,27 @@
           <div class="time">12:00</div>
           <div class="icon">🍡</div>
           <div>
-            <b>Kiyomizu-dera + ถนนเก่า</b><br />เดิน Ninenzaka / Sannenzaka,
-            กินขนม, ถ่ายรูป
+            <b
+              ><button
+                class="place-link"
+                type="button"
+                data-map-place="kiyomizu"
+              >
+                Kiyomizu-dera
+              </button>
+              + ถนนเก่า</b
+            ><br />เดิน Ninenzaka / Sannenzaka, กินขนม, ถ่ายรูป
           </div>
         </div>
         <div class="step">
           <div class="time">16:00</div>
           <div class="icon">🏮</div>
           <div>
-            <b>Gion / Yasaka Shrine</b><br />เดินเล่นเย็น ๆ
-            ถ้าเหนื่อยให้ลดเวลาหรือกลับ Osaka ได้เลย
+            <b
+              ><button class="place-link" type="button" data-map-place="gion">
+                Gion / Yasaka Shrine
+              </button></b
+            ><br />เดินเล่นเย็น ๆ ถ้าเหนื่อยให้ลดเวลาหรือกลับ Osaka ได้เลย
           </div>
         </div>
         <div class="step">
@@ -680,7 +753,12 @@
           <div class="time">07:00</div>
           <div class="icon">🚶</div>
           <div>
-            <b>ออกจากโรงแรม</b><br />เปิด Google Maps ค้นหา <b>Nara Park</b>
+            <b>ออกจากโรงแรม</b><br />เปิด Google Maps ค้นหา
+            <b
+              ><button class="place-link" type="button" data-map-place="nara">
+                Nara Park
+              </button></b
+            >
           </div>
         </div>
         <details open>
@@ -703,12 +781,28 @@
         <div class="step">
           <div class="time">09:00</div>
           <div class="icon">🦌</div>
-          <div><b>Nara Park</b><br />ให้อาหารกวาง ถ่ายรูป เดินชิล</div>
+          <div>
+            <b
+              ><button class="place-link" type="button" data-map-place="nara">
+                Nara Park
+              </button></b
+            ><br />ให้อาหารกวาง ถ่ายรูป เดินชิล
+          </div>
         </div>
         <div class="step">
           <div class="time">10:30</div>
           <div class="icon">🏯</div>
-          <div><b>Todai-ji</b><br />วัดใหญ่ จุดหลักของ Nara</div>
+          <div>
+            <b
+              ><button
+                class="place-link"
+                type="button"
+                data-map-place="todaiji"
+              >
+                Todai-ji
+              </button></b
+            ><br />วัดใหญ่ จุดหลักของ Nara
+          </div>
         </div>
         <div class="step">
           <div class="time">13:00</div>
@@ -738,8 +832,26 @@
           <div class="time">07:30</div>
           <div class="icon">🚇</div>
           <div>
-            <b>ออกจากโรงแรมไป Katsuo-ji</b><br />เปิด Google Maps ค้นหา
-            <b>Katsuo-ji Temple</b> แล้วเลือกเส้นทางรถไฟ + รถบัส
+            <b
+              >ออกจากโรงแรมไป
+              <button
+                class="place-link"
+                type="button"
+                data-map-place="katsuoji"
+              >
+                Katsuo-ji
+              </button></b
+            ><br />เปิด Google Maps ค้นหา
+            <b
+              ><button
+                class="place-link"
+                type="button"
+                data-map-place="katsuoji"
+              >
+                Katsuo-ji Temple
+              </button></b
+            >
+            แล้วเลือกเส้นทางรถไฟ + รถบัส
           </div>
         </div>
         <div class="route">
@@ -756,32 +868,64 @@
           <div class="time">09:30</div>
           <div class="icon">🎯</div>
           <div>
-            <b>Katsuo-ji Temple</b><br />วัดดารุมะ ขอพรเรื่องชัยชนะ/ความสำเร็จ
-            ถ่ายรูป เดินประมาณ 60–90 นาที
+            <b
+              ><button
+                class="place-link"
+                type="button"
+                data-map-place="katsuoji"
+              >
+                Katsuo-ji Temple
+              </button></b
+            ><br />วัดดารุมะ ขอพรเรื่องชัยชนะ/ความสำเร็จ ถ่ายรูป เดินประมาณ
+            60–90 นาที
           </div>
         </div>
         <div class="step">
           <div class="time">12:00</div>
           <div class="icon">🚇</div>
           <div>
-            <b>กลับเข้าเมือง แล้วไป Kaiyukan</b><br />มุ่งหน้า
-            <b>Osakako Station</b> บน Osaka Metro Chuo Line
+            <b
+              >กลับเข้าเมือง แล้วไป
+              <button
+                class="place-link"
+                type="button"
+                data-map-place="kaiyukan"
+              >
+                Kaiyukan
+              </button></b
+            ><br />มุ่งหน้า <b>Osakako Station</b> บน Osaka Metro Chuo Line
           </div>
         </div>
         <div class="step">
           <div class="time">14:30</div>
           <div class="icon">🐋</div>
           <div>
-            <b>Osaka Aquarium Kaiyukan</b><br />เดินดูอะควาเรียมประมาณ 2–3
-            ชั่วโมง ถ้ามีเวลาเดิน Tempozan Marketplace ต่อได้
+            <b
+              ><button
+                class="place-link"
+                type="button"
+                data-map-place="kaiyukan"
+              >
+                Osaka Aquarium Kaiyukan
+              </button></b
+            ><br />เดินดูอะควาเรียมประมาณ 2–3 ชั่วโมง ถ้ามีเวลาเดิน Tempozan
+            Marketplace ต่อได้
           </div>
         </div>
         <div class="step">
           <div class="time">18:30</div>
           <div class="icon">🌃</div>
           <div>
-            <b>Dotonbori Night Walk</b><br />กลับย่าน Namba/Shinsaibashi
-            กินมื้อเย็น ซื้อของฝากรอบแรก เดินดูไฟกลางคืน
+            <b
+              ><button
+                class="place-link"
+                type="button"
+                data-map-place="dotonbori"
+              >
+                Dotonbori Night Walk
+              </button></b
+            ><br />กลับย่าน Namba/Shinsaibashi กินมื้อเย็น ซื้อของฝากรอบแรก
+            เดินดูไฟกลางคืน
           </div>
         </div>
         <div class="box warn">
@@ -802,9 +946,14 @@
           <div class="time">10:00</div>
           <div class="icon">🛍️</div>
           <div>
-            <b>ซื้อของฝาก/ของใช้ หรือแวะ Den Den Town สั้น ๆ</b><br />Donki,
-            Uniqlo, GU, ร้านยา, ร้านขนม ถ้าอยากดูเกม/อิเล็กทรอนิกส์ให้ไป Den Den
-            Town ช่วงเช้าแล้วคุมเวลา
+            <b
+              >ซื้อของฝาก/ของใช้ หรือแวะ
+              <button class="place-link" type="button" data-map-place="denden">
+                Den Den Town
+              </button>
+              สั้น ๆ</b
+            ><br />Donki, Uniqlo, GU, ร้านยา, ร้านขนม
+            ถ้าอยากดูเกม/อิเล็กทรอนิกส์ให้ไป Den Den Town ช่วงเช้าแล้วคุมเวลา
           </div>
         </div>
         <div class="step">
@@ -831,8 +980,11 @@
           <div class="time">17:30</div>
           <div class="icon">🛫</div>
           <div>
-            <b>ถึง KIX</b><br />เช็กอิน Peach, โหลดกระเป๋า 20kg x 2 คน, ผ่าน
-            Security
+            <b
+              ><button class="place-link" type="button" data-map-place="kix">
+                ถึง KIX
+              </button></b
+            ><br />เช็กอิน Peach, โหลดกระเป๋า 20kg x 2 คน, ผ่าน Security
           </div>
         </div>
         <div class="step">
@@ -909,9 +1061,7 @@
           </tr>
           <tr>
             <td>ยอดใหญ่</td>
-            <td>
-              Credit Cards
-            </td>
+            <td>Credit Cards</td>
           </tr>
         </table>
         <div class="box">
@@ -1135,6 +1285,14 @@
         section.scrollIntoView({ behavior: "smooth", block: "start" });
       }
 
+      function setMapPlaceOpener(openPlace) {
+        document.querySelectorAll("[data-map-place]").forEach((element) => {
+          element.addEventListener("click", () => {
+            openPlace(element.dataset.mapPlace);
+          });
+        });
+      }
+
       function initTripMap() {
         const mapEl = document.getElementById("trip-map");
         const actionsEl = document.getElementById("map-actions");
@@ -1158,6 +1316,12 @@
         if (!window.L) {
           mapEl.innerHTML =
             '<div class="box warn">โหลดแผนที่ในไฟล์ไม่ได้บนแอป/เบราว์เซอร์นี้ ให้ใช้ปุ่มด้านล่างเปิด Google Maps แทน หรืออัปขึ้น Vercel แล้วเปิดผ่าน https</div>';
+          setMapPlaceOpener((id) => {
+            const place = tripPlaces.find((item) => item.id === id);
+            if (!place) return;
+
+            window.open(googleMapsUrl(place), "_blank", "noopener");
+          });
           return;
         }
 
@@ -1173,6 +1337,16 @@
           attribution: "&copy; OpenStreetMap contributors",
         }).addTo(map);
 
+        function openPlace(id) {
+          const place = tripPlaces.find((item) => item.id === id);
+          const marker = markers[id];
+          if (!place || !marker) return;
+
+          scrollMapSectionToTop();
+          map.flyTo([place.lat, place.lng], place.zoom, { duration: 0.8 });
+          setTimeout(() => marker.openPopup(), 350);
+        }
+
         tripPlaces.forEach((place) => {
           const marker = L.marker([place.lat, place.lng])
             .addTo(map)
@@ -1186,13 +1360,11 @@
           const button = document.createElement("button");
           button.type = "button";
           button.textContent = place.label;
-          button.addEventListener("click", () => {
-            scrollMapSectionToTop();
-            map.flyTo([place.lat, place.lng], place.zoom, { duration: 0.8 });
-            setTimeout(() => marker.openPopup(), 350);
-          });
+          button.addEventListener("click", () => openPlace(place.id));
           actionsEl.appendChild(button);
         });
+
+        setMapPlaceOpener(openPlace);
 
         dayRoutes.forEach((route, index) => {
           const points = route.map((id) => {
