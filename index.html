@@ -249,6 +249,7 @@
         gap: 8px;
       }
       .map-actions button,
+      .map-actions a,
       .map-popup-link {
         border: 1px solid var(--line);
         border-radius: 12px;
@@ -262,7 +263,9 @@
         text-decoration: none;
       }
       .map-actions button:hover,
-      .map-actions button:focus {
+      .map-actions button:focus,
+      .map-actions a:hover,
+      .map-actions a:focus {
         border-color: var(--blue);
         outline: none;
       }
@@ -275,6 +278,11 @@
         color: var(--muted);
         font-size: 13px;
         margin-top: 8px;
+      }
+      .map-fallback {
+        display: grid;
+        gap: 8px;
+        margin-top: 10px;
       }
       .footer {
         color: #777;
@@ -616,45 +624,66 @@
         </div>
       </section>
       <section class="card" id="day4">
-        <h2>🎮 DAY 4 — 13 OCT: Osaka Local Day</h2>
+        <h2>🌊 DAY 4 — 13 OCT: Katsuo-ji + Kaiyukan + Osaka Night</h2>
         <p>
-          <span class="badge blue">เดินเมือง</span
-          ><span class="badge orange">ซื้อของใช้/ของกิน/ของฝาก</span>
+          <span class="badge blue">เพิ่มจากที่อยากไป</span
+          ><span class="badge green">Katsuo-ji</span
+          ><span class="badge blue">Kaiyukan</span
+          ><span class="badge orange">วันนี้แน่นที่สุด</span>
         </p>
         <div class="step">
-          <div class="time">08:30</div>
-          <div class="icon">🎮</div>
+          <div class="time">07:30</div>
+          <div class="icon">🚇</div>
           <div>
-            <b>Den Den Town</b><br />เดินดูร้านเกม เครื่องเกมเก่า มือถือเก่า
-            ของสะสม ร้านอิเล็กทรอนิกส์
-          </div>
-        </div>
-        <div class="box">
-          <b>วิธีไป:</b> เดินจากย่าน Namba ได้ หรือใช้ Osaka Metro แล้วเปิด
-          Google Maps ค้นหา <b>Den Den Town</b>
-        </div>
-        <div class="step">
-          <div class="time">13:00</div>
-          <div class="icon">🏯</div>
-          <div>
-            <b>Osaka Castle</b><br />จาก Shinsaibashi ใช้
-            <b>Nagahori Tsurumi-ryokuchi Line</b> ไป Morinomiya แล้วเดินเข้าสวน
+            <b>ออกจากโรงแรมไป Katsuo-ji</b><br />เปิด Google Maps ค้นหา
+            <b>Katsuo-ji Temple</b> แล้วเลือกเส้นทางรถไฟ + รถบัส
           </div>
         </div>
         <div class="route">
-          <p>Shinsaibashi Station → Morinomiya Station</p>
           <p>
-            <b>บัตร:</b> ICOCA | <b>เวลา:</b> 15–25 นาที |
-            <b>งบ:</b> ค่ารถไฟในเมือง
+            เส้นทางง่าย: Shinsaibashi/Namba → Umeda → Kita-Senri หรือ Minoh
+            Kayano → ต่อ Bus/Taxi ไปวัด
+          </p>
+          <p>
+            <b>เวลา:</b> ประมาณ 70–100 นาที/ขา | <b>หมายเหตุ:</b> เช็ก Google
+            Maps วันจริง เพราะรถบัสมีรอบ
           </p>
         </div>
         <div class="step">
-          <div class="time">18:00</div>
+          <div class="time">09:30</div>
+          <div class="icon">🎯</div>
+          <div>
+            <b>Katsuo-ji Temple</b><br />วัดดารุมะ ขอพรเรื่องชัยชนะ/ความสำเร็จ
+            ถ่ายรูป เดินประมาณ 60–90 นาที
+          </div>
+        </div>
+        <div class="step">
+          <div class="time">12:00</div>
+          <div class="icon">🚇</div>
+          <div>
+            <b>กลับเข้าเมือง แล้วไป Kaiyukan</b><br />มุ่งหน้า
+            <b>Osakako Station</b> บน Osaka Metro Chuo Line
+          </div>
+        </div>
+        <div class="step">
+          <div class="time">14:30</div>
+          <div class="icon">🐋</div>
+          <div>
+            <b>Osaka Aquarium Kaiyukan</b><br />เดินดูอะควาเรียมประมาณ 2–3
+            ชั่วโมง ถ้ามีเวลาเดิน Tempozan Marketplace ต่อได้
+          </div>
+        </div>
+        <div class="step">
+          <div class="time">18:30</div>
           <div class="icon">🌃</div>
           <div>
-            <b>Dotonbori Night Walk</b><br />กินมื้อเย็น ซื้อของฝากรอบแรก
-            เดินดูไฟกลางคืน
+            <b>Dotonbori Night Walk</b><br />กลับย่าน Namba/Shinsaibashi
+            กินมื้อเย็น ซื้อของฝากรอบแรก เดินดูไฟกลางคืน
           </div>
+        </div>
+        <div class="box warn">
+          <b>ถ้าวันนี้แน่นเกิน:</b> ให้ตัด Osaka Castle ออกจากแผนหลัก และย้าย
+          Den Den Town ไปเช้า Day 5 หรือเดินเฉพาะช่วงสั้น ๆ รอบ Namba
         </div>
       </section>
       <section class="card" id="day5">
@@ -670,7 +699,9 @@
           <div class="time">10:00</div>
           <div class="icon">🛍️</div>
           <div>
-            <b>ซื้อของฝาก/ของใช้</b><br />Donki, Uniqlo, GU, ร้านยา, ร้านขนม
+            <b>ซื้อของฝาก/ของใช้ หรือแวะ Den Den Town สั้น ๆ</b><br />Donki,
+            Uniqlo, GU, ร้านยา, ร้านขนม ถ้าอยากดูเกม/อิเล็กทรอนิกส์ให้ไป Den Den
+            Town ช่วงเช้าแล้วคุมเวลา
           </div>
         </div>
         <div class="step">
@@ -934,16 +965,34 @@
           id: "denden",
           name: "Den Den Town",
           label: "🎮 Den Den Town",
-          day: "Day 4",
+          day: "Day 5 option",
           lat: 34.6575,
           lng: 135.5062,
+          zoom: 16,
+        },
+        {
+          id: "katsuoji",
+          name: "Katsuo-ji Temple",
+          label: "🎯 Katsuo-ji",
+          day: "Day 4",
+          lat: 34.8645,
+          lng: 135.4911,
+          zoom: 15,
+        },
+        {
+          id: "kaiyukan",
+          name: "Osaka Aquarium Kaiyukan",
+          label: "🐋 Kaiyukan",
+          day: "Day 4",
+          lat: 34.6545,
+          lng: 135.4289,
           zoom: 16,
         },
         {
           id: "castle",
           name: "Osaka Castle",
           label: "🏯 Osaka Castle",
-          day: "Day 4",
+          day: "Optional",
           lat: 34.6873,
           lng: 135.5262,
           zoom: 16,
@@ -954,8 +1003,8 @@
         ["kix", "namba", "hotel", "dotonbori"],
         ["hotel", "fushimi", "kiyomizu", "gion", "hotel"],
         ["hotel", "nara", "todaiji", "hotel"],
-        ["hotel", "denden", "castle", "dotonbori", "hotel"],
-        ["hotel", "namba", "kix"],
+        ["hotel", "katsuoji", "kaiyukan", "dotonbori", "hotel"],
+        ["hotel", "denden", "namba", "kix"],
       ];
 
       function googleMapsUrl(place) {
@@ -971,12 +1020,27 @@
 
         if (!mapEl || !actionsEl) return;
 
+        function renderLinkActions() {
+          actionsEl.innerHTML = "";
+          tripPlaces.forEach((place) => {
+            const link = document.createElement("a");
+            link.href = googleMapsUrl(place);
+            link.target = "_blank";
+            link.rel = "noopener";
+            link.textContent = place.label;
+            actionsEl.appendChild(link);
+          });
+        }
+
+        renderLinkActions();
+
         if (!window.L) {
           mapEl.innerHTML =
-            '<div class="box warn">โหลดแผนที่ไม่ได้ กรุณาเชื่อมต่ออินเทอร์เน็ตแล้วเปิดไฟล์ใหม่</div>';
+            '<div class="box warn">โหลดแผนที่ในไฟล์ไม่ได้บนแอป/เบราว์เซอร์นี้ ให้ใช้ปุ่มด้านล่างเปิด Google Maps แทน หรืออัปขึ้น Vercel แล้วเปิดผ่าน https</div>';
           return;
         }
 
+        actionsEl.innerHTML = "";
         const map = L.map(mapEl, { scrollWheelZoom: false }).setView(
           [34.69, 135.55],
           9,
