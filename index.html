@@ -1014,6 +1014,13 @@
         return `https://www.google.com/maps/search/?api=1&query=${query}`;
       }
 
+      function scrollMapSectionToTop() {
+        const section = document.getElementById("trip-map-section");
+        if (!section) return;
+
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
       function initTripMap() {
         const mapEl = document.getElementById("trip-map");
         const actionsEl = document.getElementById("map-actions");
@@ -1066,8 +1073,9 @@
           button.type = "button";
           button.textContent = place.label;
           button.addEventListener("click", () => {
+            scrollMapSectionToTop();
             map.flyTo([place.lat, place.lng], place.zoom, { duration: 0.8 });
-            marker.openPopup();
+            setTimeout(() => marker.openPopup(), 350);
           });
           actionsEl.appendChild(button);
         });
