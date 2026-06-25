@@ -480,7 +480,7 @@
         margin-right: 3px;
         border-right: 2px solid rgba(17, 24, 39, 0.62);
         border-bottom: 2px solid rgba(17, 24, 39, 0.62);
-        transform: rotate(45deg) translateY(-2px);
+        transform: rotate(225deg) translate(-1px, -1px);
         transform-origin: 58% 58%;
         transition: border-color 0.18s ease;
       }
@@ -494,10 +494,10 @@
         border-color: #064ca8;
       }
       details[open] > summary::after {
-        transform: rotate(225deg) translate(-1px, -1px);
+        transform: rotate(45deg) translateY(-2px);
       }
       details.is-closing > summary::after {
-        transform: rotate(45deg) translateY(-2px);
+        transform: rotate(225deg) translate(-1px, -1px);
       }
       details.is-animating {
         overflow: hidden;
