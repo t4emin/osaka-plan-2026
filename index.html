@@ -649,6 +649,146 @@
         line-height: 1.6;
         padding: 20px 0;
       }
+      .mascot-scroll {
+        --mascot-width: 92px;
+        --mascot-offset: 0px;
+        position: fixed;
+        right: max(16px, env(safe-area-inset-right));
+        bottom: max(14px, env(safe-area-inset-bottom));
+        z-index: 90;
+        width: var(--mascot-width);
+        height: 116px;
+        pointer-events: none;
+        filter: drop-shadow(0 16px 22px rgba(31, 45, 61, 0.22));
+        transform-origin: 50% 100%;
+        animation: mascot-float 3.2s ease-in-out infinite;
+      }
+      .mascot-scroll::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background-image: url("assets/mascot-sprite.png");
+        background-repeat: no-repeat;
+        background-size: auto 100%;
+        background-position: var(--mascot-offset) 0;
+      }
+      .mascot-scroll .mascot-shadow {
+        position: absolute;
+        left: 18%;
+        right: 18%;
+        bottom: 0;
+        z-index: 0;
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(17, 24, 39, 0.16);
+        filter: blur(5px);
+        transform: translateY(7px) scaleX(1);
+        transform-origin: 50% 50%;
+      }
+      .mascot-scroll.is-scrolling {
+        animation: none;
+      }
+      .mascot-scroll.is-flying {
+        animation: mascot-fly 0.95s cubic-bezier(0.16, 0.84, 0.32, 1) infinite;
+      }
+      .mascot-scroll.is-flying .mascot-shadow {
+        animation: mascot-shadow-fly 0.95s cubic-bezier(0.16, 0.84, 0.32, 1) infinite;
+      }
+      .mascot-scroll.is-stomping {
+        animation: mascot-stomp 0.82s cubic-bezier(0.2, 0.82, 0.22, 1) infinite;
+      }
+      .mascot-scroll.is-stomping .mascot-shadow {
+        animation: mascot-shadow-stomp 0.82s cubic-bezier(0.2, 0.82, 0.22, 1) infinite;
+      }
+      .mascot-scroll.is-stomping .mascot-shadow::after {
+        content: "";
+        position: absolute;
+        inset: -7px -15px;
+        border: 2px solid rgba(23, 105, 255, 0.24);
+        border-radius: 999px;
+        opacity: 0;
+        animation: mascot-shockwave 0.82s ease-out infinite;
+      }
+      @keyframes mascot-float {
+        0%,
+        100% {
+          transform: translateY(0) rotate(-1deg);
+        }
+        50% {
+          transform: translateY(-9px) rotate(2deg);
+        }
+      }
+      @keyframes mascot-fly {
+        0% {
+          transform: translateY(0) rotate(-2deg) scale(1);
+        }
+        18% {
+          transform: translateY(10px) rotate(-7deg) scale(1.08, 0.9);
+        }
+        46% {
+          transform: translateY(-96px) rotate(17deg) scale(0.96, 1.06);
+        }
+        72% {
+          transform: translateY(-52px) rotate(9deg) scale(1);
+        }
+        100% {
+          transform: translateY(0) rotate(-1deg) scale(1);
+        }
+      }
+      @keyframes mascot-stomp {
+        0% {
+          transform: translateY(0) rotate(1deg) scale(1);
+        }
+        26% {
+          transform: translateY(-64px) rotate(-8deg) scale(0.98, 1.05);
+        }
+        58% {
+          transform: translateY(14px) rotate(3deg) scale(1.12, 0.82);
+        }
+        74% {
+          transform: translateY(-16px) rotate(-2deg) scale(0.96, 1.08);
+        }
+        100% {
+          transform: translateY(0) rotate(0) scale(1);
+        }
+      }
+      @keyframes mascot-shadow-fly {
+        0%,
+        100% {
+          opacity: 1;
+          transform: translateY(7px) scaleX(1);
+        }
+        46% {
+          opacity: 0.28;
+          transform: translateY(7px) scaleX(0.46);
+        }
+      }
+      @keyframes mascot-shadow-stomp {
+        0%,
+        100% {
+          opacity: 1;
+          transform: translateY(7px) scaleX(1);
+        }
+        26% {
+          opacity: 0.38;
+          transform: translateY(7px) scaleX(0.58);
+        }
+        58% {
+          opacity: 1;
+          transform: translateY(7px) scaleX(1.38);
+        }
+      }
+      @keyframes mascot-shockwave {
+        0% {
+          opacity: 0.55;
+          transform: scale(0.45);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(1.3);
+        }
+      }
       @media (max-width: 700px) {
         .mode-switch {
           max-width: 150px;
@@ -659,6 +799,22 @@
         }
         #trip-map {
           min-height: 360px;
+        }
+        .mascot-scroll {
+          --mascot-width: 76px;
+          height: 95px;
+          right: max(10px, env(safe-area-inset-right));
+          bottom: max(10px, env(safe-area-inset-bottom));
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .mascot-scroll {
+          animation: none;
+        }
+        .mascot-scroll.is-scrolling,
+        .mascot-scroll.is-flying,
+        .mascot-scroll.is-stomping {
+          animation: none;
         }
       }
       @media (max-width: 1120px) {
@@ -897,6 +1053,10 @@
       html.perf-mode .sign.black {
         background: #2f3033;
         color: #fff;
+      }
+      html.perf-mode .mascot-scroll {
+        animation: none;
+        filter: drop-shadow(0 10px 16px rgba(24, 25, 27, 0.12));
       }
       html.perf-mode .leaflet-container {
         filter: grayscale(1);
@@ -1822,6 +1982,12 @@
         </main>
       </div>
     </div>
+    <div
+      class="mascot-scroll"
+      aria-hidden="true"
+    >
+      <span class="mascot-shadow" aria-hidden="true"></span>
+    </div>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
       const tripPlaces = [
@@ -2155,8 +2321,103 @@
         });
       }
 
+      function setupMascotScroller() {
+        const mascot = document.querySelector(".mascot-scroll");
+        if (!mascot) return;
+
+        const reduceMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+        const neutralFrames = [0, 1, 2, 3, 4];
+        const downFrames = [12, 13, 14, 13];
+        const upFrames = [5, 6, 7, 8, 9, 6];
+        let idleIndex = 0;
+        let idleTimer = null;
+        let actionTimer = null;
+        let scrollStopTimer = null;
+        let currentFrame = 0;
+        let lastScrollY = window.scrollY;
+        let activeDirection = null;
+
+        function setFrame(frame) {
+          currentFrame = frame;
+          mascot.style.setProperty(
+            "--mascot-offset",
+            `${frame * mascot.offsetWidth * -1}px`,
+          );
+        }
+
+        function startIdle() {
+          if (reduceMotion || idleTimer) return;
+
+          idleTimer = window.setInterval(() => {
+            idleIndex = (idleIndex + 1) % neutralFrames.length;
+            setFrame(neutralFrames[idleIndex]);
+          }, 1400);
+        }
+
+        function stopAction() {
+          window.clearInterval(actionTimer);
+          actionTimer = null;
+          activeDirection = null;
+          mascot.classList.remove("is-scrolling", "is-flying", "is-stomping");
+          idleIndex = 0;
+          setFrame(neutralFrames[0]);
+          startIdle();
+        }
+
+        function playScrollAction(direction) {
+          if (reduceMotion || isPerformanceMode()) {
+            setFrame(direction === "down" ? downFrames[0] : upFrames[0]);
+            window.clearTimeout(scrollStopTimer);
+            scrollStopTimer = window.setTimeout(stopAction, 520);
+            return;
+          }
+
+          if (activeDirection === direction && actionTimer) return;
+
+          const frames = direction === "down" ? downFrames : upFrames;
+          const actionClass = direction === "down" ? "is-flying" : "is-stomping";
+          window.clearInterval(idleTimer);
+          window.clearInterval(actionTimer);
+          idleTimer = null;
+          activeDirection = direction;
+          mascot.classList.remove("is-flying", "is-stomping");
+          mascot.classList.add("is-scrolling", actionClass);
+
+          let frameIndex = 0;
+          setFrame(frames[frameIndex]);
+          actionTimer = window.setInterval(() => {
+            frameIndex = (frameIndex + 1) % frames.length;
+            setFrame(frames[frameIndex]);
+          }, 135);
+        }
+
+        window.addEventListener(
+          "scroll",
+          () => {
+            const currentScrollY = window.scrollY;
+            const delta = currentScrollY - lastScrollY;
+            lastScrollY = currentScrollY;
+
+            if (Math.abs(delta) < 2) return;
+
+            playScrollAction(delta > 0 ? "down" : "up");
+            window.clearTimeout(scrollStopTimer);
+            scrollStopTimer = window.setTimeout(stopAction, 520);
+          },
+          { passive: true },
+        );
+        window.addEventListener("resize", () => {
+          setFrame(currentFrame);
+        });
+        setFrame(neutralFrames[0]);
+        startIdle();
+      }
+
       setupDisplayMode();
       setupSmoothDetails();
+      setupMascotScroller();
       initTripMap();
     </script>
   </body>
