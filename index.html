@@ -30,15 +30,9 @@
         font-display: swap;
       }
       :root {
-        --bg: #f4eadc;
-        --card: rgba(255, 255, 255, 0.56);
         --ink: #11181c;
         --muted: rgba(17, 24, 39, 0.64);
-        --line: rgba(255, 255, 255, 0.54);
         --blue: #1769ff;
-        --green: #149b5f;
-        --orange: #f59e0b;
-        --red: #e53935;
         --glass-line: rgba(255, 255, 255, 0.66);
         --glass-shadow: 0 24px 70px rgba(31, 45, 61, 0.14);
         --inner-light: inset 0 1px 0 rgba(255, 255, 255, 0.86),
@@ -269,10 +263,6 @@
       .orange {
         background: rgba(255, 243, 214, 0.76);
         color: #936000;
-      }
-      .red {
-        background: rgba(255, 231, 231, 0.76);
-        color: #b42318;
       }
       .content-shell {
         display: grid;
@@ -637,11 +627,6 @@
         line-height: 1.55;
         margin-top: 8px;
       }
-      .map-fallback {
-        display: grid;
-        gap: 8px;
-        margin-top: 10px;
-      }
       .place-link {
         appearance: none;
         border: 0;
@@ -799,15 +784,9 @@
         }
       }
       html.perf-mode {
-        --bg: #f6f6f4;
-        --card: #fff;
         --ink: #18191b;
         --muted: #666a70;
-        --line: #dedede;
         --blue: #2c2d30;
-        --green: #2c2d30;
-        --orange: #2c2d30;
-        --red: #2c2d30;
         --glass-line: #dedede;
         --glass-shadow: none;
         --inner-light: none;
@@ -864,7 +843,6 @@
       html.perf-mode .blue,
       html.perf-mode .green,
       html.perf-mode .orange,
-      html.perf-mode .red,
       html.perf-mode .ok,
       html.perf-mode .warn {
         background: #f4f4f2;
@@ -2046,18 +2024,6 @@
         }
 
         renderLinkActions();
-
-        if (isPerformanceMode()) {
-          mapEl.innerHTML =
-            '<div class="box">Performance mode: ปิดแผนที่แบบ interactive เพื่อลดภาระเครื่อง ใช้ปุ่มด้านขวาเพื่อเปิด Google Maps แทน</div>';
-          setMapPlaceOpener((id) => {
-            const place = tripPlaces.find((item) => item.id === id);
-            if (!place) return;
-
-            window.open(googleMapsUrl(place), "_blank", "noopener");
-          });
-          return;
-        }
 
         if (!window.L) {
           mapEl.innerHTML =
