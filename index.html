@@ -651,7 +651,9 @@
       }
       .mascot-scroll {
         --mascot-width: 92px;
+        --mascot-sheet-width: 1380px;
         --mascot-offset: 0px;
+        --mascot-frame-scale: 0.92;
         position: fixed;
         right: max(16px, env(safe-area-inset-right));
         bottom: max(14px, env(safe-area-inset-bottom));
@@ -670,8 +672,10 @@
         z-index: 1;
         background-image: url("assets/mascot-sprite.png");
         background-repeat: no-repeat;
-        background-size: auto 100%;
+        background-size: var(--mascot-sheet-width) 100%;
         background-position: var(--mascot-offset) 0;
+        transform: scale(var(--mascot-frame-scale));
+        transform-origin: 50% 100%;
       }
       .mascot-scroll .mascot-shadow {
         position: absolute;
@@ -687,6 +691,7 @@
         transform-origin: 50% 50%;
       }
       .mascot-scroll.is-scrolling {
+        --mascot-frame-scale: 1.24;
         animation: none;
       }
       .mascot-scroll.is-flying {
@@ -802,6 +807,7 @@
         }
         .mascot-scroll {
           --mascot-width: 76px;
+          --mascot-sheet-width: 1140px;
           height: 95px;
           right: max(10px, env(safe-area-inset-right));
           bottom: max(10px, env(safe-area-inset-bottom));
@@ -2367,7 +2373,11 @@
         }
 
         function playScrollAction(direction) {
+          const actionClass = direction === "down" ? "is-flying" : "is-stomping";
+
           if (reduceMotion || isPerformanceMode()) {
+            mascot.classList.remove("is-flying", "is-stomping");
+            mascot.classList.add("is-scrolling", actionClass);
             setFrame(direction === "down" ? downFrames[0] : upFrames[0]);
             window.clearTimeout(scrollStopTimer);
             scrollStopTimer = window.setTimeout(stopAction, 520);
@@ -2377,7 +2387,6 @@
           if (activeDirection === direction && actionTimer) return;
 
           const frames = direction === "down" ? downFrames : upFrames;
-          const actionClass = direction === "down" ? "is-flying" : "is-stomping";
           window.clearInterval(idleTimer);
           window.clearInterval(actionTimer);
           idleTimer = null;
