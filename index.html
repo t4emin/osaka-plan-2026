@@ -598,6 +598,10 @@
         display: grid;
         align-content: start;
         gap: 8px;
+        max-height: min(430px, 70vh);
+        overflow-y: auto;
+        padding-right: 4px;
+        overscroll-behavior: contain;
       }
       .map-actions button,
       .map-actions a,
@@ -665,16 +669,26 @@
         --mascot-sheet-width: 2208px;
         --mascot-offset: 0px;
         --mascot-frame-scale: 0.92;
+        appearance: none;
+        border: 0;
+        padding: 0;
+        background: transparent;
         position: fixed;
         right: max(16px, env(safe-area-inset-right));
         bottom: max(14px, env(safe-area-inset-bottom));
         z-index: 90;
         width: var(--mascot-width);
         height: 234px;
-        pointer-events: none;
+        cursor: pointer;
         filter: drop-shadow(0 16px 22px rgba(31, 45, 61, 0.22));
         transform-origin: 50% 100%;
         animation: mascot-float 3.2s ease-in-out infinite;
+        touch-action: manipulation;
+      }
+      .mascot-scroll:focus-visible {
+        outline: 3px solid rgba(23, 105, 255, 0.42);
+        outline-offset: 6px;
+        border-radius: 18px;
       }
       .mascot-scroll::before {
         content: "";
@@ -815,6 +829,9 @@
         }
         #trip-map {
           min-height: 360px;
+        }
+        .map-actions {
+          max-height: 220px;
         }
         .mascot-scroll {
           --mascot-width: 76px;
@@ -1110,8 +1127,8 @@
           <b>ผู้เดินทาง:</b> 2 คน<br /><b>ที่พัก:</b> ZONE SHINSAIBASHI WEST<br /><b
             >สไตล์ทริป:</b
           >
-          ทริปญี่ปุ่นครั้งแรก ตื่นเช้า เดินเยอะ เที่ยวให้คุ้ม
-          แต่ไม่รีบจนเหนื่อยเกินไป
+          ทริปญี่ปุ่นครั้งแรก ตื่นเช้า แบ่ง Kyoto East / West ชัดเจน
+          เที่ยวให้คุ้มแต่ไม่รีบจนเหนื่อยเกินไป
         </p>
         <p>
           <span class="badge blue">✈️ VZ566 BKK→KIX</span
@@ -1123,9 +1140,9 @@
       </section>
       <div class="content-shell">
         <nav class="nav" aria-label="Trip sections">
-          <a href="#before">ก่อนเดินทาง</a><a href="#day1">Day 1</a
-          ><a href="#day2">Day 2</a><a href="#day3">Day 3</a
-          ><a href="#day4">Day 4</a><a href="#day5">Day 5</a
+          <a href="#before">ก่อนเดินทาง</a><a href="#day1">Day 1 Osaka</a
+          ><a href="#day2">Day 2 Kyoto East</a><a href="#day3">Day 3 Kyoto West</a
+          ><a href="#day4">Day 4 Osaka</a><a href="#day5">Day 5 Shopping</a
           ><a href="#trip-map-section">แผนที่</a><a href="#emergency">ฉุกเฉิน</a>
         </nav>
         <main>
@@ -1202,6 +1219,36 @@
             </td>
           </tr>
         </table>
+      </section>
+      <section class="card">
+        <h2>📌 สรุปแผนใหม่</h2>
+        <div class="grid">
+          <div class="box ok">
+            <b>ภาพรวมทริป:</b>
+            <p>
+              Osaka 2 วันเต็ม + Kyoto 2 วันเต็ม เหมาะกับทริปญี่ปุ่นครั้งแรกมากกว่า
+              เพราะได้ทั้งเมืองใหญ่ ช้อปปิ้ง อาหาร และย่านประวัติศาสตร์แบบไม่เร่งเกินไป
+            </p>
+          </div>
+          <div class="box">
+            <b>งบเดินทางโดยประมาณ:</b>
+            <p>
+              รถไฟ/บัสตลอดทริปประมาณ <b>6,500–9,500 เยน/คน</b>
+              ไม่รวมค่าเข้าและช้อปปิ้ง ใช้ ICOCA ได้เกือบทั้งหมด
+            </p>
+          </div>
+        </div>
+        <div class="box">
+          <b>ระยะเดินรวม:</b> ประมาณ <b>48–60 กม.</b> ทั้งทริป
+          โดยวันที่หนักสุดคือ Kyoto East และ Kyoto West ควรใส่รองเท้าที่เดินได้นาน
+        </div>
+        <div class="box ok">
+          <b>Recommendation:</b> สำหรับทริปญี่ปุ่นครั้งแรก
+          <b>Kyoto 2 full days + Osaka 2 full days</b> ให้ประสบการณ์ดีกว่า
+          <b>Kyoto 1 day + another day trip</b> เพราะ Kyoto ใหญ่กว่าที่คิด
+          มีย่านประวัติศาสตร์หลายฝั่ง และการแยก East / West Kyoto
+          ช่วยลดเวลาย้อนเส้นทาง ทำให้เที่ยวสนุกขึ้นมาก
+        </div>
       </section>
       <section class="card" id="day1">
         <h2>🛬 DAY 1 — 10 OCT: ถึงญี่ปุ่น + เข้าเมือง + เดินย่านที่พัก</h2>
@@ -1342,225 +1389,402 @@
           </p>
         </div>
         <div class="box warn">
-          <b>ไม่ควรทำวันนี้:</b> อย่าไป Kyoto/Nara ต่อ, อย่าซื้อของฝากหนัก ๆ
+          <b>ไม่ควรทำวันนี้:</b> อย่าไป Kyoto ต่อ, อย่าซื้อของฝากหนัก ๆ
           วันแรก, อย่าเดินจนดึกมาก เพราะ Day 2 ตื่น 06:00
         </div>
       </section>
       <section class="card" id="day2">
-        <h2>⛩️ DAY 2 — 11 OCT: Kyoto Easy Route</h2>
+        <h2>⛩️ DAY 2 — 11 OCT: Kyoto East</h2>
         <p>
-          <span class="badge orange">ตื่น 06:00</span
+          <span class="badge orange">Start 06:00</span
           ><span class="badge green">ใช้ ICOCA</span
-          ><span class="badge blue">เดินเยอะ</span>
+          ><span class="badge blue">Fushimi → Higashiyama → Gion</span>
         </p>
         <div class="step">
-          <div class="time">07:15</div>
+          <div class="time">06:45</div>
           <div class="icon">🚶</div>
           <div>
-            <b>ออกจากโรงแรม</b><br />เปิด Google Maps ค้นหา
-            <b
-              ><button
-                class="place-link"
-                type="button"
-                data-map-place="fushimi"
-              >
-                Fushimi Inari Taisha
-              </button></b
-            >
-            เลือกเส้นทางรถไฟ
+            <b>ออกจากโรงแรม</b><br />เดินไป Shinsaibashi หรือ Namba
+            แล้วเปิด Google Maps ไป
+            <button class="place-link" type="button" data-map-place="fushimi">
+              Fushimi Inari Taisha
+            </button>
           </div>
         </div>
-        <details>
+        <details open>
           <summary>🚇 โรงแรม → Fushimi Inari แบบเดินตามได้</summary>
           <div class="route">
-            <p><b>ตัวเลือกง่ายสำหรับมือใหม่:</b></p>
+            <p><b>เส้นทาง:</b> Osaka Metro Midosuji Line → Keihan Main Line</p>
+            <p>1) แตะ ICOCA เข้า <b>Shinsaibashi Station</b></p>
             <p>
-              1) เดินไป <b>Shinsaibashi Station</b> หรือสถานีที่ Google Maps
-              แนะนำจากโรงแรม
+              2) ขึ้น <b>Osaka Metro Midosuji Line</b> ไป
+              <b>Yodoyabashi Station</b> ประมาณ 6 นาที
             </p>
-            <p>2) แตะ ICOCA เข้า Osaka Metro</p>
             <p>
-              3) ขึ้น <b>Osaka Metro Midosuji Line</b> ไป
-              <b>Yodoyabashi Station</b>
+              3) เดินตามป้าย <b>Keihan Railway</b> แล้วขึ้นชานชาลาฝั่ง
+              <b>Kyoto / Demachiyanagi</b>
             </p>
-            <p>4) เดินตามป้าย <b>Keihan Railway / Keihan Line</b></p>
-            <div class="sign green">KEIHAN LINE</div>
-            <p>5) ขึ้นรถไฟ Keihan มุ่งหน้า Kyoto / Demachiyanagi</p>
-            <p>6) ลง <b>Fushimi-Inari Station</b></p>
-            <p>7) เดิน 2–5 นาทีถึงศาลเจ้า</p>
-            <p><b>เวลา:</b> 50–70 นาที | <b>งบ:</b> ประมาณ 500–800 เยน/คน</p>
+            <div class="sign green">KEIHAN LINE / KYOTO</div>
+            <p>
+              4) ขึ้น Limited Express/Express แล้วถ้าขบวนไม่จอด
+              <b>Fushimi-Inari</b> ให้เปลี่ยนเป็น Local ที่
+              <b>Tambabashi</b> หรือ <b>Chushojima</b>
+            </p>
+            <p>
+              5) ลง <b>Fushimi-Inari Station</b> เดิน 2–5 นาทีถึงศาลเจ้า
+            </p>
+            <p>
+              <b>เวลา:</b> 55–75 นาที | <b>ค่าโดยสาร:</b> 650–850 เยน |
+              <b>ICOCA:</b> แตะเข้า/ออกได้ทั้ง Metro และ Keihan
+            </p>
+          </div>
+        </details>
+        <details>
+          <summary>⛩️ Fushimi Inari</summary>
+          <p>
+            <button class="place-link" type="button" data-map-place="fushimi">
+              เปิด Fushimi Inari บนแผนที่
+            </button>
+          </p>
+          <p><b>Estimated visiting time:</b> 08:00–10:00 ประมาณ 90–120 นาที</p>
+          <p><b>Walking distance:</b> 2–4 กม. ตามแรง เดินถึงจุดชมวิวกลางเขาก็พอ</p>
+          <p>
+            <b>Photo spots:</b> เสาแดงช่วงต้นทาง, ทางแยก Senbon Torii,
+            จุดที่เสาเริ่มโล่งขึ้นหลังเดินขึ้นไปสักพัก
+          </p>
+          <p>
+            <b>Local food:</b> Inari sushi, kitsune udon, taiyaki หรือกาแฟใกล้สถานี
+          </p>
+          <p><b>Rest area:</b> ร้านชา/คาเฟ่หน้า shrine และม้านั่งแถวทางลง</p>
+          <div class="box warn">
+            <b>Common mistakes:</b> ไปสายเกินแล้วคนแน่น, ฝืนเดินขึ้นยอดเขา,
+            ถ่ายรูปขวางทางเดิน และลืมว่าต้องกลับลงทางเดิมบางช่วง
           </div>
         </details>
         <div class="step">
-          <div class="time">08:30</div>
-          <div class="icon">⛩️</div>
-          <div>
-            <b
-              ><button
-                class="place-link"
-                type="button"
-                data-map-place="fushimi"
-              >
-                Fushimi Inari
-              </button></b
-            ><br />ถ่ายรูปเสาแดง เดินขึ้นตามแรงไหว ไม่ต้องขึ้นจนสุดเขาก็ได้
-          </div>
-        </div>
-        <div class="step">
-          <div class="time">11:00</div>
+          <div class="time">10:15</div>
           <div class="icon">🚆</div>
           <div>
-            <b
-              >ไป
-              <button
-                class="place-link"
-                type="button"
-                data-map-place="kiyomizu"
-              >
-                Kiyomizu-dera
-              </button></b
-            ><br />จาก Fushimi Inari ขึ้น Keihan ไป
-            <b>Kiyomizu-Gojo</b> แล้วเดินขึ้นย่านวัด/ถนนเก่า
+            <b>Fushimi Inari → Kiyomizu-dera</b><br />ขึ้น Keihan Main Line จาก
+            <b>Fushimi-Inari Station</b> ไป <b>Kiyomizu-Gojo Station</b>
+            แล้วเดิน/ต่อแท็กซี่สั้น ๆ ไปย่านวัด
           </div>
         </div>
-        <div class="step">
-          <div class="time">12:00</div>
-          <div class="icon">🍡</div>
-          <div>
-            <b
-              ><button
-                class="place-link"
-                type="button"
-                data-map-place="kiyomizu"
-              >
-                Kiyomizu-dera
-              </button>
-              + ถนนเก่า</b
-            ><br />เดิน Ninenzaka / Sannenzaka, กินขนม, ถ่ายรูป
+        <details>
+          <summary>🏯 Kiyomizu-dera</summary>
+          <div class="route">
+            <p>
+              <b>Transportation:</b> Keihan Main Line จาก Fushimi-Inari →
+              Kiyomizu-Gojo ประมาณ 10–15 นาที ค่าโดยสาร 220–300 เยน ใช้ ICOCA ได้
+            </p>
+            <p>
+              <b>Walking distance:</b> จาก Kiyomizu-Gojo ถึงวัดประมาณ 1.6–1.9 กม.
+              เป็นทางขึ้นเนิน ใช้เวลา 25–35 นาที
+            </p>
           </div>
-        </div>
-        <div class="step">
-          <div class="time">16:00</div>
-          <div class="icon">🏮</div>
-          <div>
-            <b
-              ><button class="place-link" type="button" data-map-place="gion">
-                Gion / Yasaka Shrine
-              </button></b
-            ><br />เดินเล่นเย็น ๆ ถ้าเหนื่อยให้ลดเวลาหรือกลับ Osaka ได้เลย
+          <p>
+            <button class="place-link" type="button" data-map-place="kiyomizu">
+              เปิด Kiyomizu-dera บนแผนที่
+            </button>
+          </p>
+          <p><b>Estimated visiting time:</b> 11:00–12:30 ประมาณ 90 นาที</p>
+          <p><b>Photo spots:</b> เวทีไม้, มุมเจดีย์สามชั้น, วิวเมือง Kyoto</p>
+          <p><b>Local food:</b> yuba, matcha soft serve, yatsuhashi</p>
+          <p><b>Rest area:</b> ม้านั่งในโซนวัดและร้านน้ำก่อนลง Sannenzaka</p>
+          <div class="box warn">
+            <b>Common mistakes:</b> ประเมินทางขึ้นต่ำไป, ใส่รองเท้าไม่เหมาะ,
+            ไม่เผื่อเวลาคิวถ่ายรูป และเดินย้อนลงผิดฝั่งจนเสียเวลา
           </div>
-        </div>
+        </details>
+        <details>
+          <summary>🍡 Sannenzaka</summary>
+          <p>
+            <button class="place-link" type="button" data-map-place="sannenzaka">
+              เปิด Sannenzaka บนแผนที่
+            </button>
+          </p>
+          <p><b>Transportation:</b> เดินลงจาก Kiyomizu-dera 5–8 นาที</p>
+          <p><b>Train line / fare / ICOCA:</b> ไม่ต้องขึ้นรถ ช่วงนี้เดินต่อเนื่อง ไม่มีค่าโดยสารเพิ่ม</p>
+          <p><b>Walking distance:</b> 400–700 ม. ในย่านทางลาดและบันได</p>
+          <p><b>Estimated visiting time:</b> 12:30–13:30 รวมแวะกินขนม</p>
+          <p><b>Photo spots:</b> ทางลาดหิน, บ้านไม้เก่า, มุมร้านขนมสองข้างทาง</p>
+          <p><b>Local food:</b> dango, warabimochi, matcha latte</p>
+          <p><b>Rest area:</b> คาเฟ่และร้านชาในซอย แนะนำพักก่อนเดินต่อ</p>
+          <div class="box warn">
+            <b>Common mistakes:</b> หยุดถ่ายกลางทางแคบ, เดินสวนคนโดยไม่ชิดซ้าย,
+            ซื้อของหนักตั้งแต่ต้นวัน
+          </div>
+        </details>
+        <details>
+          <summary>🍵 Ninenzaka</summary>
+          <p>
+            <button class="place-link" type="button" data-map-place="ninenzaka">
+              เปิด Ninenzaka บนแผนที่
+            </button>
+          </p>
+          <p><b>Transportation:</b> เดินต่อจาก Sannenzaka 3–5 นาที</p>
+          <p><b>Train line / fare / ICOCA:</b> ไม่ต้องขึ้นรถ ไม่มีค่าโดยสารเพิ่ม</p>
+          <p><b>Walking distance:</b> 300–600 ม. ทางเดินหิน คนเยอะช่วงบ่าย</p>
+          <p><b>Estimated visiting time:</b> 13:30–14:30</p>
+          <p><b>Photo spots:</b> บันไดหิน, ร้านไม้, มุมถนนโค้งช่วงลงเนิน</p>
+          <p><b>Local food:</b> matcha parfait, Kyoto coffee, croquette</p>
+          <p><b>Rest area:</b> Starbucks Kyoto Ninenzaka หรือคาเฟ่เล็กใกล้ทางออก</p>
+          <div class="box warn">
+            <b>Common mistakes:</b> วางแผนกินร้านดังโดยไม่เผื่อคิว,
+            เดินชนคนเพราะดูมือถือ และลืมเช็กทางไป Yasaka Shrine
+          </div>
+        </details>
+        <details>
+          <summary>🏮 Yasaka Shrine</summary>
+          <div class="route">
+            <p>
+              <b>Transportation:</b> เดินจาก Ninenzaka ผ่าน Nene-no-Michi ไป
+              <b>Yasaka Shrine</b> ประมาณ 15–20 นาที ไม่ต้องขึ้นรถ
+            </p>
+            <p><b>ICOCA:</b> ไม่ได้ใช้ช่วงนี้ เพราะเดินเที่ยวต่อเนื่อง</p>
+          </div>
+          <p>
+            <button class="place-link" type="button" data-map-place="yasaka">
+              เปิด Yasaka Shrine บนแผนที่
+            </button>
+          </p>
+          <p><b>Estimated visiting time:</b> 15:00–15:45</p>
+          <p><b>Photo spots:</b> ประตูแดง, โคมไฟ, มุมทางเข้า Maruyama Park</p>
+          <p><b>Local food:</b> yakitori/snack หน้า shrine หรือของหวานย่าน Gion</p>
+          <p><b>Rest area:</b> Maruyama Park มีพื้นที่นั่งพักและห้องน้ำ</p>
+          <div class="box warn">
+            <b>Common mistakes:</b> เดินผ่านเร็วเกินไป, ไม่พักเท้าก่อนเข้า Gion,
+            และถ่ายรูปติดพิธีโดยไม่สังเกตพื้นที่ห้ามเข้า
+          </div>
+        </details>
+        <details>
+          <summary>🌙 Gion</summary>
+          <p>
+            <button class="place-link" type="button" data-map-place="gion">
+              เปิด Gion บนแผนที่
+            </button>
+          </p>
+          <p>
+            <b>Transportation:</b> เดินจาก Yasaka Shrine 5–10 นาที ไป Hanamikoji
+            หรือ Shirakawa
+          </p>
+          <p><b>Train line / fare / ICOCA:</b> ไม่ต้องขึ้นรถจนกว่าจะกลับ Osaka ทาง Gion-Shijo Station</p>
+          <p><b>Walking distance:</b> 1–2 กม. แล้วแต่เดินลึกแค่ไหน</p>
+          <p><b>Estimated visiting time:</b> 16:00–18:00</p>
+          <p><b>Photo spots:</b> Hanamikoji, Gion Shirakawa, สะพานเล็กริมคลอง</p>
+          <p><b>Local food:</b> soba, obanzai, matcha dessert, izakaya เบา ๆ</p>
+          <p><b>Rest area:</b> คาเฟ่ริม Shirakawa หรือกลับไปนั่งแถว Kawaramachi</p>
+          <div class="box warn">
+            <b>Common mistakes:</b> ถ่ายรูปคนท้องถิ่นใกล้เกินไป,
+            เข้า private alley, หวังว่าจะเห็น geisha แน่นอน และกลับ Osaka ดึกเกิน
+          </div>
+        </details>
         <div class="step">
-          <div class="time">19:00</div>
+          <div class="time">18:30</div>
           <div class="icon">🚆</div>
           <div>
-            <b>กลับ Osaka</b><br />ใช้ Keihan Line กลับ Yodoyabashi → Osaka
-            Metro กลับย่านโรงแรม
+            <b>กลับ Osaka</b><br />เดินไป <b>Gion-Shijo Station</b> ขึ้น
+            <b>Keihan Main Line</b> กลับ <b>Yodoyabashi</b> แล้วต่อ
+            <b>Osaka Metro Midosuji Line</b> กลับ Shinsaibashi/Namba
+            ใช้เวลาประมาณ 60–75 นาที ค่าโดยสาร 650–850 เยน ใช้ ICOCA ได้
           </div>
-        </div>
-        <div class="box warn">
-          <b>ข้อควรระวัง:</b> Kyoto เดินเยอะและคนเยอะ อย่าฝืน ถ้าเหนื่อยให้ตัด
-          Kiyomizu หรือ Gion ออกอย่างใดอย่างหนึ่ง
         </div>
         <div class="box ok">
           <b>สรุปค่าใช้จ่ายวันนี้:</b>
           <ul class="cost-list">
-            <li>รถไฟ Osaka ↔ Kyoto และเดินทางในเมือง: 1,200–1,800 เยน</li>
+            <li>รถไฟ Osaka ↔ Kyoto East และเดินทางในเมือง: 1,500–2,200 เยน</li>
             <li>ค่าเข้า Kiyomizu-dera: ประมาณ 500 เยน</li>
-            <li>อาหาร/ขนมใน Kyoto: 1,500–3,000 เยน</li>
+            <li>อาหาร/ขนมใน Kyoto: 2,000–3,500 เยน</li>
             <li>เผื่อน้ำ/ขนม: 500–1,000 เยน</li>
           </ul>
           <p class="cost-total">
-            รวมประมาณ 3,700–6,300 เยน/คน (≈ 850–1,450 บาท)
+            รวมประมาณ 4,500–7,200 เยน/คน (≈ 1,040–1,660 บาท)
           </p>
         </div>
       </section>
       <section class="card" id="day3">
-        <h2>🦌 DAY 3 — 12 OCT: Nara Easy Route</h2>
+        <h2>🎋 DAY 3 — 12 OCT: Kyoto West</h2>
         <p>
-          <span class="badge green">ใช้ ICOCA</span
-          ><span class="badge blue">ไม่ต้องซื้อ Pass</span>
+          <span class="badge orange">Start 06:00</span
+          ><span class="badge green">ใช้ ICOCA</span
+          ><span class="badge blue">Arashiyama + Kinkaku-ji optional</span>
         </p>
-        <div class="step">
-          <div class="time">07:00</div>
-          <div class="icon">🚶</div>
-          <div>
-            <b>ออกจากโรงแรม</b><br />เปิด Google Maps ค้นหา
-            <b
-              ><button class="place-link" type="button" data-map-place="nara">
-                Nara Park
-              </button></b
-            >
-          </div>
-        </div>
-        <details>
-          <summary>🚆 Osaka → Nara แบบง่าย</summary>
+        <details open>
+          <summary>🚆 Osaka → Arashiyama แบบแนะนำ</summary>
           <div class="route">
-            <p>1) ไป <b>Osaka-Namba Station</b></p>
-            <p>2) แตะ ICOCA เข้า Kintetsu</p>
+            <p><b>เส้นทางหลัก:</b> Osaka Metro → Hankyu Kyoto Line → Hankyu Arashiyama Line</p>
+            <p>1) จากโรงแรมไป <b>Umeda / Osaka-Umeda Station</b></p>
             <p>
-              3) ขึ้น <b>Kintetsu Nara Line</b> ไป <b>Kintetsu-Nara Station</b>
+              2) ขึ้น <b>Hankyu Kyoto Line</b> ไป <b>Katsura Station</b>
+              ฝั่ง Kyoto
             </p>
-            <div class="sign orange">KINTETSU NARA LINE</div>
-            <p>4) ลง Kintetsu-Nara แล้วเดินไป Nara Park ประมาณ 5–10 นาที</p>
-            <p><b>เวลา:</b> ประมาณ 45–60 นาที | <b>งบ:</b> ประมาณ 700 เยน/คน</p>
+            <p>
+              3) เปลี่ยนเป็น <b>Hankyu Arashiyama Line</b> ไป
+              <b>Arashiyama Station</b>
+            </p>
+            <div class="sign orange">HANKYU KYOTO LINE → ARASHIYAMA LINE</div>
+            <p>
+              <b>Travel time:</b> 65–85 นาที | <b>Fare:</b> 650–900 เยน |
+              <b>ICOCA:</b> ใช้ได้ | <b>Platform tip:</b>
+              ที่ Katsura ให้ตามป้าย Arashiyama Line อย่าออกนอก gate
+            </p>
           </div>
+        </details>
+        <details>
+          <summary>🎋 Arashiyama Bamboo Grove</summary>
+          <p>
+            <button class="place-link" type="button" data-map-place="bamboo">
+              เปิด Arashiyama Bamboo Grove บนแผนที่
+            </button>
+          </p>
+          <p><b>Transportation:</b> เดินจาก Hankyu Arashiyama Station 15–20 นาที</p>
+          <p><b>Fare / ICOCA:</b> ไม่มีค่าเดินทางเพิ่มหลังออกสถานี ใช้ ICOCA เฉพาะตอนนั่งรถไฟมา</p>
+          <p><b>Walking distance:</b> 1.2–1.6 กม. จากสถานีถึงป่าไผ่</p>
+          <p><b>Estimated stay:</b> 07:45–08:45 ประมาณ 45–60 นาที</p>
+          <p><b>Best photo spots:</b> ทางเดินไผ่ช่วงกลาง, มุมใกล้ Tenryu-ji North Gate</p>
+          <p><b>Recommended food:</b> ยังไม่ควรกินหนัก แนะนำกาแฟ/ขนมเล็ก ๆ</p>
+          <p><b>Recommended cafe:</b> % Arabica Kyoto Arashiyama ถ้าคิวไม่ยาว</p>
           <div class="box warn">
-            <b>ระวัง:</b> ถ้าเป็น Limited Express อาจต้องจ่ายเพิ่ม ให้เลือก
-            Express/Rapid Express ตาม Google Maps จะง่ายกว่า
+            <b>Common mistakes:</b> มาถึงสายเกิน 09:00, คาดหวังว่าทางเดินจะยาวมาก,
+            ถ่ายรูปกลางทางนาน และลืมว่าแสงเช้าสวยกว่า
+          </div>
+        </details>
+        <details>
+          <summary>🏯 Tenryu-ji</summary>
+          <p>
+            <button class="place-link" type="button" data-map-place="tenryuji">
+              เปิด Tenryu-ji บนแผนที่
+            </button>
+          </p>
+          <p><b>Transportation:</b> เดินจาก Bamboo Grove 3–8 นาที</p>
+          <p><b>Fare / ICOCA:</b> ไม่มีค่าเดินทางเพิ่ม เป็นเส้นทางเดินต่อจากป่าไผ่</p>
+          <p><b>Walking distance:</b> 300–600 ม.</p>
+          <p><b>Estimated stay:</b> 09:00–10:15 ประมาณ 60–75 นาที</p>
+          <p><b>Best photo spots:</b> สวน Sogenchi, ฉากภูเขา, ทางเดินออกฝั่งป่าไผ่</p>
+          <p><b>Recommended food:</b> yudofu หรือ soba แถวหน้าวัดช่วงสาย</p>
+          <p><b>Recommended cafe:</b> ร้านชาใกล้ Tenryu-ji หรือคาเฟ่ใน shopping street</p>
+          <div class="box warn">
+            <b>Common mistakes:</b> เดินข้ามสวนเพราะคิดว่าเป็นแค่วัด,
+            ไม่เผื่อค่าเข้า และรีบไปสะพานจนพลาดมุมสวน
+          </div>
+        </details>
+        <details>
+          <summary>🌉 Togetsukyo Bridge</summary>
+          <p>
+            <button class="place-link" type="button" data-map-place="togetsukyo">
+              เปิด Togetsukyo Bridge บนแผนที่
+            </button>
+          </p>
+          <p><b>Transportation:</b> เดินจาก Tenryu-ji 8–12 นาที</p>
+          <p><b>Fare / ICOCA:</b> ไม่มีค่าเดินทางเพิ่ม เดินตามป้ายไปสะพานได้เลย</p>
+          <p><b>Walking distance:</b> 700–900 ม.</p>
+          <p><b>Estimated stay:</b> 10:30–11:15</p>
+          <p><b>Best photo spots:</b> ริมแม่น้ำก่อนขึ้นสะพาน, กลางสะพาน, ฝั่งสวนริมแม่น้ำ</p>
+          <p><b>Recommended food:</b> croquette, soft serve, grilled snack แถวสะพาน</p>
+          <p><b>Recommended cafe:</b> คาเฟ่ริม Katsura River ถ้าเจอที่นั่งว่าง</p>
+          <div class="box warn">
+            <b>Common mistakes:</b> ยืนถ่ายรูปกีดทาง, ไม่ระวังรถ/จักรยาน,
+            และเดินข้ามไปมาโดยไม่ดูจุดถ่ายจากริมแม่น้ำ
+          </div>
+        </details>
+        <details>
+          <summary>🛍️ Arashiyama Shopping Street</summary>
+          <p>
+            <button class="place-link" type="button" data-map-place="arashiyama_street">
+              เปิด Arashiyama Shopping Street บนแผนที่
+            </button>
+          </p>
+          <p><b>Transportation:</b> เดินจาก Togetsukyo Bridge 3–8 นาที</p>
+          <p><b>Fare / ICOCA:</b> ไม่มีค่าเดินทางเพิ่ม ใช้เงินสด/บัตรเฉพาะร้านค้า</p>
+          <p><b>Walking distance:</b> 500–900 ม. แล้วแต่แวะร้าน</p>
+          <p><b>Estimated stay:</b> 11:15–12:45</p>
+          <p><b>Best photo spots:</b> หน้าร้านขนม, Randen Arashiyama Station, Kimono Forest</p>
+          <p><b>Recommended food:</b> yuba croquette, matcha dessert, Kyoto-style lunch set</p>
+          <p><b>Recommended cafe:</b> eX cafe Kyoto Arashiyama หรือร้านที่คิวสั้นกว่า</p>
+          <div class="box warn">
+            <b>Common mistakes:</b> ใช้เวลากับร้านของฝากนานเกิน,
+            กินจุกจิกจนข้ามมื้อกลางวัน และไม่เช็กเวลารถไปจุดถัดไป
+          </div>
+        </details>
+        <details>
+          <summary>☕ Riverside Cafe</summary>
+          <p>
+            <button class="place-link" type="button" data-map-place="riverside_cafe">
+              เปิด Riverside Cafe บนแผนที่
+            </button>
+          </p>
+          <p><b>Transportation:</b> เดินกลับไปริม Katsura River 5–10 นาที</p>
+          <p><b>Fare / ICOCA:</b> ไม่มีค่าเดินทางเพิ่ม เตรียมเงินสดเผื่อคาเฟ่เล็ก</p>
+          <p><b>Walking distance:</b> 400–800 ม.</p>
+          <p><b>Estimated stay:</b> 13:00–14:00 พักเท้า 45–60 นาที</p>
+          <p><b>Best photo spots:</b> โต๊ะริมหน้าต่าง, ริมแม่น้ำ, วิวสะพานจากฝั่งคาเฟ่</p>
+          <p><b>Recommended food:</b> กาแฟ, matcha, cake หรือ light lunch</p>
+          <p><b>Recommended cafe:</b> % Arabica / Arabica-adjacent riverside cafes หรือร้านริมแม่น้ำที่มีที่นั่ง</p>
+          <div class="box warn">
+            <b>Common mistakes:</b> ต่อคิวนานทั้งที่เหนื่อย, ไม่ดื่มน้ำ,
+            และไม่ตัดสินใจว่าจะไป Kinkaku-ji ต่อหรือกลับ Osaka
+          </div>
+        </details>
+        <details>
+          <summary>🌟 Kinkaku-ji optional ถ้ายังมีแรง</summary>
+          <div class="route">
+            <p>
+              <b>Transportation:</b> จาก Arashiyama ไป <b>Randen Arashiyama Station</b>
+              ขึ้น <b>Randen Arashiyama Line</b> ไป <b>Kitano-Hakubaicho</b>
+              แล้วต่อ Kyoto City Bus ไป <b>Kinkakuji-michi</b>
+            </p>
+            <p>
+              <b>Bus information:</b> เช็ก Google Maps วันจริง หมายเลขรถอาจเปลี่ยนตามเวลา
+              ใช้ ICOCA แตะขึ้น/ลงได้บนรถบัสส่วนใหญ่
+            </p>
+            <p>
+              <b>Travel time:</b> 45–70 นาที | <b>Fare:</b> 500–800 เยน |
+              <b>Walking distance:</b> จากป้ายถึงทางเข้าประมาณ 5–10 นาที
+            </p>
+          </div>
+          <p>
+            <button class="place-link" type="button" data-map-place="kinkakuji">
+              เปิด Kinkaku-ji บนแผนที่
+            </button>
+          </p>
+          <p><b>Estimated stay:</b> 15:15–16:15 ประมาณ 45–60 นาที</p>
+          <p><b>Best photo spots:</b> ริมสระหน้า Golden Pavilion, มุมทางเดินวนหลังวัด</p>
+          <p><b>Recommended food:</b> matcha sweet หรือ snack หน้าทางออก</p>
+          <p><b>Recommended cafe:</b> พักสั้น ๆ ใกล้ป้าย Kinkakuji-michi ก่อนกลับ</p>
+          <div class="box warn">
+            <b>Common mistakes:</b> ฝืนไปทั้งที่หมดแรง, ไปถึงใกล้เวลาปิด,
+            ไม่เผื่อรถติดของรถบัส และคิดว่าอยู่ใกล้ Arashiyama ทั้งที่ต้องต่อรถ
           </div>
         </details>
         <div class="step">
-          <div class="time">09:00</div>
-          <div class="icon">🦌</div>
-          <div>
-            <b
-              ><button class="place-link" type="button" data-map-place="nara">
-                Nara Park
-              </button></b
-            ><br />ให้อาหารกวาง ถ่ายรูป เดินชิล
-          </div>
-        </div>
-        <div class="step">
-          <div class="time">10:30</div>
-          <div class="icon">🏯</div>
-          <div>
-            <b
-              ><button
-                class="place-link"
-                type="button"
-                data-map-place="todaiji"
-              >
-                Todai-ji
-              </button></b
-            ><br />วัดใหญ่ จุดหลักของ Nara
-          </div>
-        </div>
-        <div class="step">
-          <div class="time">13:00</div>
-          <div class="icon">🍜</div>
-          <div>
-            <b>กินข้าวแถว Nara</b><br />เลือก Udon / Donburi / ร้านท้องถิ่นง่าย
-            ๆ
-          </div>
-        </div>
-        <div class="step">
-          <div class="time">15:00</div>
+          <div class="time">17:00</div>
           <div class="icon">🚆</div>
           <div>
-            <b>กลับ Osaka</b><br />ถ้ายังมีแรง กลับไปเดิน Dotonbori ตอนกลางคืน
+            <b>กลับ Osaka</b><br />ถ้าอยู่ Arashiyama ให้กลับทาง Hankyu:
+            Arashiyama → Katsura → Osaka-Umeda → Metro กลับโรงแรม
+            ถ้าอยู่ Kinkaku-ji ให้ใช้ Bus ไปสถานีที่ Google Maps แนะนำ
+            แล้วต่อ Hankyu/JR กลับ Osaka ใช้เวลาประมาณ 75–110 นาที
           </div>
+        </div>
+        <div class="box ok">
+          <b>Why Kyoto is worth two full days:</b>
+          <p>
+            Kyoto ใหญ่และกระจายเป็นหลายโซน การแยก East Kyoto กับ West Kyoto
+            ทำให้ไม่ต้องวิ่งข้ามเมืองไปมา ลดเวลาบนรถไฟ/บัส และทำให้ได้เดินย่านเก่า
+            วัด สะพาน คาเฟ่ และถนนช้อปปิ้งแบบสนุกกว่า ไม่ต้องเร่งทุกจุดให้จบในวันเดียว
+          </p>
         </div>
         <div class="box ok">
           <b>สรุปค่าใช้จ่ายวันนี้:</b>
           <ul class="cost-list">
-            <li>รถไฟ Osaka ↔ Nara: 1,400–1,600 เยน</li>
-            <li>ค่าเข้า Todai-ji: ประมาณ 800 เยน</li>
-            <li>ขนมกวาง + อาหารกลางวัน: 1,500–2,500 เยน</li>
+            <li>รถไฟ Osaka ↔ Arashiyama: 1,300–1,800 เยน</li>
+            <li>เดินทางเสริมไป Kinkaku-ji optional: 500–800 เยน</li>
+            <li>ค่าเข้า Tenryu-ji / Kinkaku-ji: ประมาณ 1,000–1,300 เยน</li>
+            <li>อาหาร/คาเฟ่ใน Arashiyama: 2,500–4,000 เยน</li>
             <li>เผื่อน้ำ/ขนม: 500–1,000 เยน</li>
           </ul>
           <p class="cost-total">
-            รวมประมาณ 4,200–5,900 เยน/คน (≈ 970–1,360 บาท)
+            รวมประมาณ 5,800–8,900 เยน/คน (≈ 1,340–2,050 บาท)
           </p>
         </div>
       </section>
@@ -1599,13 +1823,24 @@
           </div>
         </div>
         <div class="route">
+          <p><b>เส้นทางแนะนำ:</b> Osaka Metro → Kita-Osaka Kyuko → Hankyu Bus</p>
           <p>
-            เส้นทางง่าย: Shinsaibashi/Namba → Umeda → Kita-Senri หรือ Minoh
-            Kayano → ต่อ Bus/Taxi ไปวัด
+            1) จาก <b>Shinsaibashi Station</b> ขึ้น
+            <b>Osaka Metro Midosuji Line</b> ไป <b>Senri-Chuo Station</b>
+            หรือ <b>Minoh-Kayano Station</b> ตาม Google Maps
           </p>
           <p>
-            <b>เวลา:</b> ประมาณ 70–100 นาที/ขา | <b>หมายเหตุ:</b> เช็ก Google
-            Maps วันจริง เพราะรถบัสมีรอบ
+            2) ต่อ <b>Hankyu Bus</b> ไปป้ายใกล้ Katsuo-ji
+            ถ้ารอบบัสไม่ดีให้ใช้ taxi จาก Minoh-Kayano เป็นตัวสำรอง
+          </p>
+          <p>
+            <b>เวลา:</b> 75–105 นาที/ขา | <b>ค่าโดยสาร:</b> 900–1,400 เยน/ขา |
+            <b>ICOCA:</b> ใช้ได้กับ Metro และบัสส่วนใหญ่
+          </p>
+          <p>
+            <button class="place-link" type="button" data-map-place="katsuoji">
+              เปิด Katsuo-ji บนแผนที่
+            </button>
           </p>
         </div>
         <div class="step">
@@ -1637,9 +1872,42 @@
               >
                 Kaiyukan
               </button></b
-            ><br />มุ่งหน้า <b>Osakako Station</b> บน Osaka Metro Chuo Line
+            ><br />จาก Katsuo-ji กลับมาฝั่ง Senri-Chuo/Minoh-Kayano
+            แล้วต่อ Osaka Metro ไป <b>Honmachi Station</b>
+            เปลี่ยนเป็น <b>Osaka Metro Chuo Line</b> ไป
+            <b>Osakako Station</b>
           </div>
         </div>
+        <details>
+          <summary>🚇 Katsuo-ji → Kaiyukan / Tempozan</summary>
+          <div class="route">
+            <p>
+              <b>เส้นทาง:</b> Hankyu Bus → Kita-Osaka Kyuko / Osaka Metro
+              Midosuji Line → Osaka Metro Chuo Line
+            </p>
+            <p>
+              1) จากวัดกลับไปสถานี <b>Minoh-Kayano</b> หรือ <b>Senri-Chuo</b>
+              ตามรอบบัสจริง
+            </p>
+            <p>
+              2) นั่งสาย Midosuji ลง <b>Honmachi Station</b>
+              แล้วเปลี่ยนไป <b>Chuo Line</b> ฝั่ง <b>Cosmosquare</b>
+            </p>
+            <p>
+              3) ลง <b>Osakako Station</b> ทางออก 1 หรือ 2
+              เดิน 5–10 นาทีถึง Kaiyukan และ Tempozan Marketplace
+            </p>
+            <p>
+              <b>เวลา:</b> 80–110 นาที | <b>ค่าโดยสาร:</b> 900–1,500 เยน |
+              <b>ICOCA:</b> ใช้ได้
+            </p>
+            <p>
+              <button class="place-link" type="button" data-map-place="kaiyukan">
+                เปิด Kaiyukan บนแผนที่
+              </button>
+            </p>
+          </div>
+        </details>
         <div class="step">
           <div class="time">14:30</div>
           <div class="icon">🐋</div>
@@ -1652,8 +1920,11 @@
               >
                 Osaka Aquarium Kaiyukan
               </button></b
-            ><br />เดินดูอะควาเรียมประมาณ 2–3 ชั่วโมง ถ้ามีเวลาเดิน Tempozan
-            Marketplace ต่อได้
+            ><br />เดินดูอะควาเรียมประมาณ 2–3 ชั่วโมง จากนั้นเดิน
+            <button class="place-link" type="button" data-map-place="tempozan">
+              Tempozan Marketplace
+            </button>
+            ต่อเพื่อพัก กินข้าว หรือซื้อของเบา ๆ
           </div>
         </div>
         <div class="step">
@@ -1672,9 +1943,31 @@
             เดินดูไฟกลางคืน
           </div>
         </div>
+        <details>
+          <summary>🚇 Tempozan → Dotonbori Night</summary>
+          <div class="route">
+            <p>
+              1) เดินกลับ <b>Osakako Station</b>
+              ขึ้น <b>Osaka Metro Chuo Line</b> ไป <b>Hommachi Station</b>
+            </p>
+            <p>
+              2) เปลี่ยนเป็น <b>Midosuji Line</b> ไป <b>Namba Station</b>
+              แล้วเดิน 5–10 นาทีถึง Dotonbori
+            </p>
+            <p>
+              <b>เวลา:</b> 30–40 นาที | <b>ค่าโดยสาร:</b> 240–340 เยน |
+              <b>ICOCA:</b> ใช้ได้
+            </p>
+            <p>
+              <button class="place-link" type="button" data-map-place="dotonbori">
+                เปิด Dotonbori บนแผนที่
+              </button>
+            </p>
+          </div>
+        </details>
         <div class="box warn">
-          <b>ถ้าวันนี้แน่นเกิน:</b> ให้ตัด Osaka Castle ออกจากแผนหลัก และย้าย
-          Den Den Town ไปเช้า Day 5 หรือเดินเฉพาะช่วงสั้น ๆ รอบ Namba
+          <b>ถ้าวันนี้แน่นเกิน:</b> ให้ลดเวลา Tempozan หรือกลับ Dotonbori
+          แค่กินมื้อเย็นสั้น ๆ เพราะช่วง Katsuo-ji ใช้เวลารถบัสค่อนข้างมาก
         </div>
         <div class="box ok">
           <b>สรุปค่าใช้จ่ายวันนี้:</b>
@@ -1704,13 +1997,13 @@
           <div class="icon">🛍️</div>
           <div>
             <b
-              >ซื้อของฝาก/ของใช้ หรือแวะ
+              >Shopping day: Don Quijote, Uniqlo, GU, Drug Store หรือแวะ
               <button class="place-link" type="button" data-map-place="denden">
                 Den Den Town
               </button>
               สั้น ๆ</b
-            ><br />Donki, Uniqlo, GU, ร้านยา, ร้านขนม
-            ถ้าอยากดูเกม/อิเล็กทรอนิกส์ให้ไป Den Den Town ช่วงเช้าแล้วคุมเวลา
+            ><br />ซื้อของฝาก ของใช้ ร้านยา เสื้อผ้า และขนม
+            ถ้าอยากดูเกม/อิเล็กทรอนิกส์ให้ไป Den Den Town เป็น optional แล้วคุมเวลา
           </div>
         </div>
         <div class="step">
@@ -1730,6 +2023,11 @@
             <p>
               <b>ค่าโดยสาร:</b> 970 เยน/คน | <b>เวลา:</b> ประมาณ 45 นาที |
               <b>บัตร:</b> ICOCA
+            </p>
+            <p>
+              <button class="place-link" type="button" data-map-place="kix">
+                เปิด Kansai Airport บนแผนที่
+              </button>
             </p>
           </div>
         </details>
@@ -1817,7 +2115,7 @@
         </p>
         <p>
           แหล่งอ้างอิงหลัก: Nankai Railway, Osaka Metro, Keihan Railway,
-          Kintetsu Railway,
+          Hankyu Railway, Kyoto City Bus,
           <a
             class="inline-link"
             href="https://www.vjw.digital.go.jp/"
@@ -1831,12 +2129,14 @@
         </main>
       </div>
     </div>
-    <div
+    <button
       class="mascot-scroll"
-      aria-hidden="true"
+      type="button"
+      aria-label="Scroll to top"
+      title="Scroll to top"
     >
       <span class="mascot-shadow" aria-hidden="true"></span>
-    </div>
+    </button>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
       const tripPlaces = [
@@ -1895,6 +2195,33 @@
           zoom: 16,
         },
         {
+          id: "sannenzaka",
+          name: "Sannenzaka Kyoto",
+          label: "🍡 Sannenzaka",
+          day: "Day 2",
+          lat: 34.9972,
+          lng: 135.7808,
+          zoom: 17,
+        },
+        {
+          id: "ninenzaka",
+          name: "Ninenzaka Kyoto",
+          label: "🍵 Ninenzaka",
+          day: "Day 2",
+          lat: 34.9991,
+          lng: 135.7803,
+          zoom: 17,
+        },
+        {
+          id: "yasaka",
+          name: "Yasaka Shrine Kyoto",
+          label: "🏮 Yasaka Shrine",
+          day: "Day 2",
+          lat: 35.0037,
+          lng: 135.7786,
+          zoom: 16,
+        },
+        {
           id: "gion",
           name: "Gion / Yasaka Shrine",
           label: "🏮 Gion",
@@ -1904,21 +2231,57 @@
           zoom: 16,
         },
         {
-          id: "nara",
-          name: "Nara Park",
-          label: "🦌 Nara Park",
+          id: "bamboo",
+          name: "Arashiyama Bamboo Grove",
+          label: "🎋 Bamboo Grove",
           day: "Day 3",
-          lat: 34.6851,
-          lng: 135.843,
+          lat: 35.017,
+          lng: 135.6719,
           zoom: 16,
         },
         {
-          id: "todaiji",
-          name: "Todai-ji",
-          label: "🏯 Todai-ji",
+          id: "tenryuji",
+          name: "Tenryu-ji Kyoto",
+          label: "🏯 Tenryu-ji",
           day: "Day 3",
-          lat: 34.6889,
-          lng: 135.8398,
+          lat: 35.0158,
+          lng: 135.6745,
+          zoom: 16,
+        },
+        {
+          id: "togetsukyo",
+          name: "Togetsukyo Bridge",
+          label: "🌉 Togetsukyo",
+          day: "Day 3",
+          lat: 35.0129,
+          lng: 135.6761,
+          zoom: 16,
+        },
+        {
+          id: "arashiyama_street",
+          name: "Arashiyama Shopping Street",
+          label: "🛍️ Arashiyama Street",
+          day: "Day 3",
+          lat: 35.0151,
+          lng: 135.6773,
+          zoom: 17,
+        },
+        {
+          id: "riverside_cafe",
+          name: "Arashiyama Riverside Cafe",
+          label: "☕ Riverside Cafe",
+          day: "Day 3",
+          lat: 35.0118,
+          lng: 135.6765,
+          zoom: 16,
+        },
+        {
+          id: "kinkakuji",
+          name: "Kinkaku-ji Kyoto",
+          label: "🌟 Kinkaku-ji",
+          day: "Day 3 optional",
+          lat: 35.0394,
+          lng: 135.7292,
           zoom: 16,
         },
         {
@@ -1949,21 +2312,39 @@
           zoom: 16,
         },
         {
-          id: "castle",
-          name: "Osaka Castle",
-          label: "🏯 Osaka Castle",
-          day: "Optional",
-          lat: 34.6873,
-          lng: 135.5262,
+          id: "tempozan",
+          name: "Tempozan Marketplace",
+          label: "🎡 Tempozan",
+          day: "Day 4",
+          lat: 34.6552,
+          lng: 135.4297,
           zoom: 16,
         },
       ];
 
       const dayRoutes = [
         ["kix", "namba", "hotel", "dotonbori"],
-        ["hotel", "fushimi", "kiyomizu", "gion", "hotel"],
-        ["hotel", "nara", "todaiji", "hotel"],
-        ["hotel", "katsuoji", "kaiyukan", "dotonbori", "hotel"],
+        [
+          "hotel",
+          "fushimi",
+          "kiyomizu",
+          "sannenzaka",
+          "ninenzaka",
+          "yasaka",
+          "gion",
+          "hotel",
+        ],
+        [
+          "hotel",
+          "bamboo",
+          "tenryuji",
+          "togetsukyo",
+          "arashiyama_street",
+          "riverside_cafe",
+          "kinkakuji",
+          "hotel",
+        ],
+        ["hotel", "katsuoji", "kaiyukan", "tempozan", "dotonbori", "hotel"],
         ["hotel", "denden", "namba", "kix"],
       ];
 
@@ -2187,6 +2568,14 @@
         let currentFrame = 0;
         let lastScrollY = window.scrollY;
         let activeDirection = null;
+
+        mascot.addEventListener("click", () => {
+          playScrollAction("up");
+          window.scrollTo({
+            top: 0,
+            behavior: reduceMotion ? "auto" : "smooth",
+          });
+        });
 
         function setFrame(frame) {
           currentFrame = frame;
