@@ -13,10 +13,6 @@
         document.documentElement.classList.remove("perf-mode");
       }
     </script>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
     <style>
       @font-face {
         font-family: "Trip Sans Thai";
@@ -220,6 +216,8 @@
       .card {
         position: relative;
         overflow: hidden;
+        content-visibility: auto;
+        contain-intrinsic-size: auto 640px;
         background:
           linear-gradient(145deg, rgba(255, 255, 255, 0.64), rgba(255, 255, 255, 0.34)),
           rgba(255, 255, 255, 0.36);
@@ -328,9 +326,54 @@
         transform: translateX(2px);
       }
       .route {
-        border-left: 4px solid var(--blue);
-        padding-left: 12px;
+        padding: 12px;
         margin: 12px 0;
+        border: 1px solid rgba(23, 105, 255, 0.14);
+        border-radius: 14px;
+        background: rgba(232, 241, 255, 0.34);
+      }
+      .route-title {
+        margin: 0 0 10px;
+        color: #064ca8;
+        font-weight: 820;
+      }
+      .route-steps {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: route-step;
+      }
+      .route-steps li {
+        position: relative;
+        min-height: 28px;
+        padding-left: 37px;
+        line-height: 1.58;
+        counter-increment: route-step;
+      }
+      .route-steps li::before {
+        content: counter(route-step);
+        position: absolute;
+        top: 1px;
+        left: 0;
+        display: grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 9px;
+        color: #fff;
+        background: var(--blue);
+        font-size: 12px;
+        font-weight: 850;
+      }
+      .route-meta {
+        margin: 11px 0 0;
+        padding-top: 10px;
+        border-top: 1px solid rgba(23, 105, 255, 0.14);
+        color: var(--muted);
+        font-size: 13.5px;
+        line-height: 1.55;
       }
       .step {
         display: flex;
@@ -463,6 +506,25 @@
           inset 0 1px 0 rgba(255, 255, 255, 0.86),
           0 16px 34px rgba(31, 45, 61, 0.09);
       }
+      details[open] > summary {
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(17, 24, 39, 0.08);
+      }
+      details > p {
+        margin: 8px 2px;
+        line-height: 1.62;
+      }
+      details .place-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 34px;
+        border: 1px solid rgba(23, 105, 255, 0.2);
+        border-radius: 10px;
+        padding: 6px 9px;
+        background: rgba(232, 241, 255, 0.5);
+        text-align: left;
+      }
       summary {
         display: flex;
         gap: 12px;
@@ -594,6 +656,16 @@
           inset 0 1px 0 rgba(255, 255, 255, 0.72),
           0 16px 36px rgba(31, 45, 61, 0.1);
       }
+      #trip-map.is-loading {
+        display: grid;
+        place-items: center;
+      }
+      #trip-map.is-loading::before {
+        content: "กำลังโหลดแผนที่…";
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 760;
+      }
       .map-actions {
         display: grid;
         align-content: start;
@@ -602,6 +674,14 @@
         overflow-y: auto;
         padding-right: 4px;
         overscroll-behavior: contain;
+      }
+      .map-hours {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 450;
+        line-height: 1.45;
       }
       .map-actions button,
       .map-actions a,
@@ -666,9 +746,8 @@
       }
       .mascot-scroll {
         --mascot-width: 92px;
-        --mascot-sheet-width: 2208px;
-        --mascot-offset: 0px;
-        --mascot-frame-scale: 0.92;
+        --mascot-x: 0;
+        --mascot-y: -0.991;
         appearance: none;
         border: 0;
         padding: 0;
@@ -678,11 +757,8 @@
         bottom: max(14px, env(safe-area-inset-bottom));
         z-index: 90;
         width: var(--mascot-width);
-        height: 234px;
+        height: var(--mascot-width);
         cursor: pointer;
-        filter: drop-shadow(0 16px 22px rgba(31, 45, 61, 0.22));
-        transform-origin: 50% 100%;
-        animation: mascot-float 3.2s ease-in-out infinite;
         touch-action: manipulation;
       }
       .mascot-scroll:focus-visible {
@@ -693,133 +769,125 @@
       .mascot-scroll::before {
         content: "";
         position: absolute;
-        inset: 0;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 155%;
         z-index: 1;
         background-image: url("assets/mascot-sprite.png");
+        background-image: image-set(
+          url("assets/mascot-sprite.webp") type("image/webp"),
+          url("assets/mascot-sprite.png") type("image/png")
+        );
         background-repeat: no-repeat;
-        background-size: var(--mascot-sheet-width) 100%;
-        background-position: var(--mascot-offset) 0;
-        transform: scale(var(--mascot-frame-scale));
-        transform-origin: 50% 100%;
+        /* All poses use the same pixel scale; align only their center and feet. */
+        background-size: calc(var(--mascot-width) * 24) auto;
+        background-position:
+          calc(var(--mascot-width) * var(--mascot-x))
+          calc(var(--mascot-width) * var(--mascot-y));
+        transform-origin: 50% 90%;
+        animation: mascot-idle 3.8s ease-in-out infinite;
+        filter: drop-shadow(0 4px 4px rgba(31, 45, 61, 0.16));
       }
       .mascot-scroll .mascot-shadow {
         position: absolute;
-        left: 18%;
-        right: 18%;
+        left: 22%;
+        right: 22%;
         bottom: 0;
-        z-index: 0;
-        height: 12px;
-        border-radius: 999px;
-        background: rgba(17, 24, 39, 0.16);
-        filter: blur(5px);
-        transform: translateY(7px) scaleX(1);
-        transform-origin: 50% 50%;
+        height: 7px;
+        border-radius: 50%;
+        background: rgba(17, 24, 39, 0.15);
+        filter: blur(3px);
+        animation: mascot-shadow-idle 3.8s ease-in-out infinite;
       }
-      .mascot-scroll.is-scrolling {
-        --mascot-frame-scale: 0.92;
-        animation: none;
+      .mascot-scroll.is-flying::before {
+        animation: mascot-fly 900ms ease-in-out infinite;
       }
-      .mascot-scroll.is-flying {
-        animation: mascot-fly 1.2s ease-in-out infinite;
+      .mascot-scroll.has-swim-art::before {
+        background-image: url("assets/mascot-balloon-swim.png");
+        background-image: image-set(
+          url("assets/mascot-balloon-swim.webp") type("image/webp"),
+          url("assets/mascot-balloon-swim.png") type("image/png")
+        );
+        background-size: calc(var(--mascot-width) * 4.24) auto;
+        background-position:
+          calc(var(--mascot-width) * var(--mascot-swim-x, -0.107))
+          calc(var(--mascot-width) * 0.28);
+      }
+      .mascot-scroll.is-descending::before {
+        animation: mascot-descend 1400ms ease-in-out infinite;
+      }
+      .mascot-scroll.is-landing::before {
+        animation: mascot-land 320ms ease-out both;
+      }
+      .mascot-scroll.is-greeting::before {
+        animation: mascot-greet 700ms ease-in-out;
       }
       .mascot-scroll.is-flying .mascot-shadow {
-        animation: mascot-shadow-fly 0.95s cubic-bezier(0.16, 0.84, 0.32, 1) infinite;
+        animation: mascot-shadow-hop 900ms ease-in-out infinite;
       }
-      .mascot-scroll.is-stomping {
-        animation: mascot-stomp 0.82s cubic-bezier(0.2, 0.82, 0.22, 1) infinite;
+      .mascot-scroll.is-descending .mascot-shadow {
+        animation: mascot-shadow-glide 1400ms ease-in-out infinite;
       }
-      .mascot-scroll.is-stomping .mascot-shadow {
-        animation: mascot-shadow-stomp 0.82s cubic-bezier(0.2, 0.82, 0.22, 1) infinite;
+      .mascot-scroll.is-landing .mascot-shadow {
+        animation: mascot-shadow-land 320ms ease-out both;
       }
-      .mascot-scroll.is-stomping .mascot-shadow::after {
-        content: "";
-        position: absolute;
-        inset: -7px -15px;
-        border: 2px solid rgba(23, 105, 255, 0.24);
-        border-radius: 999px;
-        opacity: 0;
-        animation: mascot-shockwave 0.82s ease-out infinite;
+      .mascot-scroll.is-paused::before,
+      .mascot-scroll.is-paused .mascot-shadow {
+        animation-play-state: paused;
       }
-      @keyframes mascot-float {
-        0%,
-        100% {
-          transform: translateY(0) rotate(-1deg);
-        }
-        50% {
-          transform: translateY(-9px) rotate(2deg);
-        }
+      @keyframes mascot-idle {
+        0%, 100% { transform: translateY(0) rotate(-1deg); }
+        50% { transform: translateY(-4px) rotate(1deg); }
       }
       @keyframes mascot-fly {
-        0% {
-          transform: translateY(0) rotate(-2deg) scale(1);
-        }
-        20% {
-          transform: translateY(-24px) rotate(-4deg) scale(1);
-        }
-        50% {
-          transform: translateY(-42px) rotate(4deg) scale(1);
-        }
-        78% {
-          transform: translateY(-24px) rotate(2deg) scale(1);
-        }
-        100% {
-          transform: translateY(0) rotate(-1deg) scale(1);
-        }
+        0%, 100% { transform: translate(-2px, -15px) rotate(-2deg); }
+        50% { transform: translate(2px, -20px) rotate(2deg); }
       }
-      @keyframes mascot-stomp {
-        0% {
-          transform: translateY(0) rotate(1deg) scale(1);
-        }
-        26% {
-          transform: translateY(-64px) rotate(-8deg) scale(0.98, 1.05);
-        }
-        58% {
-          transform: translateY(14px) rotate(3deg) scale(1.12, 0.82);
-        }
-        74% {
-          transform: translateY(-16px) rotate(-2deg) scale(0.96, 1.08);
-        }
-        100% {
-          transform: translateY(0) rotate(0) scale(1);
-        }
+      @keyframes mascot-descend {
+        0%, 100% { transform: translate(-4px, -18px) rotate(-5deg); }
+        50% { transform: translate(4px, -12px) rotate(5deg); }
       }
-      @keyframes mascot-shadow-fly {
-        0%,
-        100% {
-          opacity: 1;
-          transform: translateY(7px) scaleX(1);
-        }
-        46% {
-          opacity: 1;
-          transform: translateY(7px) scaleX(1);
-        }
+      @keyframes mascot-land {
+        from { transform: var(--mascot-landing-from); }
+        to { transform: translate(0, 0) rotate(0); }
       }
-      @keyframes mascot-shadow-stomp {
-        0%,
-        100% {
-          opacity: 1;
-          transform: translateY(7px) scaleX(1);
-        }
-        26% {
-          opacity: 0.38;
-          transform: translateY(7px) scaleX(0.58);
-        }
-        58% {
-          opacity: 1;
-          transform: translateY(7px) scaleX(1.38);
-        }
+      @keyframes mascot-shadow-glide {
+        0%, 100% { opacity: 0.3; transform: scaleX(0.65); }
+        50% { opacity: 0.45; transform: scaleX(0.75); }
       }
-      @keyframes mascot-shockwave {
-        0% {
-          opacity: 0.55;
-          transform: scale(0.45);
-        }
-        100% {
-          opacity: 0;
-          transform: scale(1.3);
-        }
+      @keyframes mascot-shadow-land {
+        0% { opacity: 0.2; transform: scaleX(0.55); }
+        70% { opacity: 0.6; transform: scaleX(0.85); }
+        100% { opacity: 0.8; transform: scaleX(1); }
+      }
+      @keyframes mascot-greet {
+        0%, 100% { transform: translateY(0) rotate(0); }
+        25% { transform: translateY(-6px) rotate(-7deg); }
+        55% { transform: translateY(-6px) rotate(7deg); }
+        80% { transform: translateY(-2px) rotate(-3deg); }
+      }
+      @keyframes mascot-shadow-idle {
+        0%, 100% { opacity: 0.8; transform: scaleX(1); }
+        50% { opacity: 0.6; transform: scaleX(0.9); }
+      }
+      @keyframes mascot-shadow-hop {
+        0%, 100% { opacity: 0.8; transform: scaleX(1); }
+        50% { opacity: 0.3; transform: scaleX(0.65); }
       }
       @media (max-width: 700px) {
+        body {
+          background-attachment: scroll;
+        }
+        .box,
+        details,
+        .badge,
+        .map-actions button,
+        .map-actions a,
+        .map-popup-link {
+          backdrop-filter: none;
+          -webkit-backdrop-filter: none;
+        }
         .mode-switch {
           max-width: 150px;
           margin: 0 0 10px;
@@ -835,20 +903,14 @@
         }
         .mascot-scroll {
           --mascot-width: 76px;
-          --mascot-sheet-width: 1824px;
-          height: 193px;
           right: max(10px, env(safe-area-inset-right));
           bottom: max(10px, env(safe-area-inset-bottom));
         }
       }
       @media (prefers-reduced-motion: reduce) {
-        .mascot-scroll {
-          animation: none;
-        }
-        .mascot-scroll.is-scrolling,
-        .mascot-scroll.is-flying,
-        .mascot-scroll.is-stomping {
-          animation: none;
+        .mascot-scroll::before,
+        .mascot-scroll .mascot-shadow {
+          animation: none !important;
         }
       }
       @media (max-width: 1120px) {
@@ -1078,8 +1140,15 @@
         color: #fff;
       }
       html.perf-mode .mascot-scroll {
-        animation: none;
-        filter: drop-shadow(0 10px 16px rgba(24, 25, 27, 0.12));
+        display: none;
+      }
+      html.perf-mode .decorative-icon,
+      html.perf-mode .icon,
+      html.perf-mode .mock .pic {
+        display: none;
+      }
+      html.perf-mode .mock {
+        grid-template-columns: 1fr;
       }
       html.perf-mode .leaflet-container {
         filter: grayscale(1);
@@ -1122,140 +1191,59 @@
         <label for="mode-performance">Perf</label>
       </fieldset>
       <section class="hero">
-        <h1>🇯🇵 Osaka First Trip Guide<br />10–14 Oct 2026</h1>
-        <p>
-          <b>ผู้เดินทาง:</b> 2 คน<br /><b>ที่พัก:</b> ZONE SHINSAIBASHI WEST<br /><b
-            >สไตล์ทริป:</b
-          >
-          ทริปญี่ปุ่นครั้งแรก ตื่นเช้า แบ่ง Kyoto East / West ชัดเจน
-          เที่ยวให้คุ้มแต่ไม่รีบจนเหนื่อยเกินไป
-        </p>
-        <p>
-          <span class="badge blue">✈️ VZ566 BKK→KIX</span
-          ><span class="badge blue">✈️ MM91 KIX→BKK</span
-          ><span class="badge green">💳 ICOCA</span
-          ><span class="badge orange">💴 เงินสด 40%</span
-          ><span class="badge orange">💳 รูด 60%</span>
-        </p>
+        <h1><span class="decorative-icon" aria-hidden="true">🇯🇵</span> Osaka · Kyoto<br />10–14 Oct 2026</h1>
       </section>
       <div class="content-shell">
         <nav class="nav" aria-label="Trip sections">
-          <a href="#before">ก่อนเดินทาง</a><a href="#day1">Day 1 Osaka</a
-          ><a href="#day2">Day 2 Kyoto East</a><a href="#day3">Day 3 Kyoto West</a
+          <a href="#day1">Day 1 Osaka</a><a href="#day2">Day 2 Kyoto East</a
+          ><a href="#day3">Day 3 Kyoto West</a
           ><a href="#day4">Day 4 Osaka</a><a href="#day5">Day 5 Shopping</a
-          ><a href="#trip-map-section">แผนที่</a><a href="#emergency">ฉุกเฉิน</a>
+          ><a href="#trip-map-section">Map</a>
         </nav>
         <main>
       <section class="card" id="trip-map-section">
-        <h2>🗺️ แผนที่จุดหมายในทริป</h2>
+        <h2><span class="decorative-icon" aria-hidden="true">🗺️</span> Map / แผนที่</h2>
         <p>
-          กดปุ่มด้านขวาเพื่อเลื่อนไปยังหมุดบนแผนที่
-          หรือกดลิงก์ในหมุดเพื่อเปิดเส้นทางใน Google Maps
+          แตะชื่อสถานที่เพื่อดูหมุด หรือเปิดต่อใน Google Maps
         </p>
         <div class="map-layout">
           <div id="trip-map" aria-label="Osaka trip map"></div>
           <div class="map-actions" id="map-actions"></div>
         </div>
         <p class="map-note">
-          แผนที่นี้ใช้ OpenStreetMap แบบออนไลน์
-          ถ้าเปิดไฟล์ตอนออฟไลน์จะยังเห็นเนื้อหาทริป แต่แผนที่จะไม่โหลด
+          เวลาเปิด–ปิดเป็นเวลาญี่ปุ่น · เช็กข้อมูล 10 ก.ย. 2026<br />
+          แผนที่ใช้ OpenStreetMap และต้องต่ออินเทอร์เน็ต
         </p>
       </section>
-      <section class="card" id="before">
-        <h2>✅ ก่อนเดินทาง</h2>
-        <div class="box">
-          <h3>📌 ต้องทำก่อนบิน</h3>
-          <ul class="cost-list">
-            <li>
-              กรอก
-              <a
-                class="inline-link"
-                href="https://www.vjw.digital.go.jp/"
-                target="_blank"
-                rel="noopener"
-                >Visit Japan Web</a
-              >
-              ให้ครบทุกคน ช่วง 1–2 สัปดาห์ก่อนบิน
-            </li>
-            <li>Screenshot QR Code เก็บไว้ในมือถือและ Cloud</li>
-            <li>ซื้อ eSIM ญี่ปุ่น 5 วัน ประมาณ 300–700 บาท/คน</li>
-            <li>เซฟ Booking โรงแรม เที่ยวบิน ประกัน และ eSIM แบบออฟไลน์</li>
-            <li>เช็ก Passport และวันหมดอายุ</li>
-            <li>เตรียมเงินสดและบัตรที่ใช้ต่างประเทศได้</li>
-            <li>ชาร์จมือถือ และดาวน์โหลด Google Maps / Translate</li>
-            <li>
-              แยก Power bank / มือถือ / เครื่องเกมพกพาไว้ในกระเป๋าถือขึ้นเครื่อง
-            </li>
-          </ul>
-          <div class="action-row">
-            <a
-              class="action-link"
-              href="https://www.vjw.digital.go.jp/"
-              target="_blank"
-              rel="noopener"
-              >เปิด Visit Japan Web / ดึง QR</a
-            >
-          </div>
-        </div>
-        <div class="box warn">
-          <b>อย่าลืม:</b> Power bank / มือถือ / เครื่องเกมพกพา / ของมีแบตเตอรี่
-          ให้ถือขึ้นเครื่อง ห้ามโหลดใต้เครื่อง
-        </div>
-      </section>
       <section class="card">
-        <h2>🧾 ข้อมูลเที่ยวบิน</h2>
+        <h2><span class="decorative-icon" aria-hidden="true">🧾</span> Travel details / ข้อมูลการเดินทาง</h2>
         <table>
           <tr>
-            <th>ขาไป</th>
+            <th>Purpose</th>
+            <td>Tourism</td>
+          </tr>
+          <tr>
+            <th>Accommodation</th>
+            <td>ZONE SHINSAIBASHI WEST, Osaka</td>
+          </tr>
+          <tr>
+            <th>Arrival flight</th>
             <td>
-              Thai Vietjet Air VZ566 | 10 Oct | 01:55 BKK → 11:25 KIX | โหลด
-              15kg
+              Thai Vietjet Air VZ566 | 10 Oct 2026 | 01:55 BKK → 11:25 KIX |
+              Checked baggage 15 kg
             </td>
           </tr>
           <tr>
-            <th>ขากลับ</th>
+            <th>Departure flight</th>
             <td>
-              Peach MM91 | 14 Oct | 19:30 KIX → 23:55 BKK | โหลด 20kg x 2 คน
+              Peach MM91 | 14 Oct 2026 | 19:30 KIX → 23:55 BKK |
+              Checked baggage 20 kg per person
             </td>
           </tr>
         </table>
       </section>
-      <section class="card">
-        <h2>📌 สรุปแผนใหม่</h2>
-        <div class="grid">
-          <div class="box ok">
-            <b>ภาพรวมทริป:</b>
-            <p>
-              Osaka 2 วันเต็ม + Kyoto 2 วันเต็ม เหมาะกับทริปญี่ปุ่นครั้งแรกมากกว่า
-              เพราะได้ทั้งเมืองใหญ่ ช้อปปิ้ง อาหาร และย่านประวัติศาสตร์แบบไม่เร่งเกินไป
-            </p>
-          </div>
-          <div class="box">
-            <b>งบเดินทางโดยประมาณ:</b>
-            <p>
-              รถไฟ/บัสตลอดทริปประมาณ <b>6,500–9,500 เยน/คน</b>
-              ไม่รวมค่าเข้าและช้อปปิ้ง ใช้ ICOCA ได้เกือบทั้งหมด
-            </p>
-          </div>
-        </div>
-        <div class="box">
-          <b>ระยะเดินรวม:</b> ประมาณ <b>48–60 กม.</b> ทั้งทริป
-          โดยวันที่หนักสุดคือ Kyoto East และ Kyoto West ควรใส่รองเท้าที่เดินได้นาน
-        </div>
-        <div class="box ok">
-          <b>Recommendation:</b> สำหรับทริปญี่ปุ่นครั้งแรก
-          <b>Kyoto 2 full days + Osaka 2 full days</b> ให้ประสบการณ์ดีกว่า
-          <b>Kyoto 1 day + another day trip</b> เพราะ Kyoto ใหญ่กว่าที่คิด
-          มีย่านประวัติศาสตร์หลายฝั่ง และการแยก East / West Kyoto
-          ช่วยลดเวลาย้อนเส้นทาง ทำให้เที่ยวสนุกขึ้นมาก
-        </div>
-      </section>
       <section class="card" id="day1">
-        <h2>🛬 DAY 1 — 10 OCT: ถึงญี่ปุ่น + เข้าเมือง + เดินย่านที่พัก</h2>
-        <p>
-          <span class="badge blue">เป้าหมายวันนี้</span> เข้าเมืองให้ราบรื่น,
-          ทำความคุ้นเคยรถไฟ, เดิน Dotonbori/Shinsaibashi แบบไม่ฝืน
-        </p>
+        <h2><span class="decorative-icon" aria-hidden="true">🛬</span> Day 1 · 10 Oct — Arrival in Osaka</h2>
         <div class="step">
           <div class="time">11:25</div>
           <div class="icon">🛬</div>
@@ -1264,8 +1252,7 @@
               ><button class="place-link" type="button" data-map-place="kix">
                 ถึง Kansai International Airport (KIX)
               </button></b
-            ><br />ลงเครื่องแล้วเดินตามป้าย
-            <b>Arrivals / Immigration</b> ไม่ต้องรีบ เดินตามคนส่วนใหญ่ได้
+            ><br />เดินตามป้าย <b>Arrivals / Immigration</b>
           </div>
         </div>
         <div class="mock">
@@ -1289,8 +1276,8 @@
           <div class="time">12:00</div>
           <div class="icon">🧳</div>
           <div>
-            <b>ผ่าน ตม. + รับกระเป๋า</b><br />ดูจอ Monitor หาเที่ยวบิน
-            <b>VZ566</b> แล้วไปสายพานที่จอบอก
+            <b>Immigration + Baggage claim</b><br />ดูจอหาเที่ยวบิน
+            <b>VZ566</b> แล้วไปรับกระเป๋าตามหมายเลขสายพาน
           </div>
         </div>
         <div class="step">
@@ -1302,35 +1289,32 @@
           </div>
         </div>
         <details>
-          <summary>🚆 KIX → Namba แบบละเอียด</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">🚆</span> KIX → Namba</span></summary>
           <div class="route">
-            <p><b>1) เดินตามป้าย Railway / Nankai Line</b></p>
+            <p><b>เดินตามป้าย Railway / Nankai Line</b></p>
             <div class="sign">NANKAI LINE / RAILWAY</div>
-            <p><b>2) สถานีต้นทาง:</b> Kansai Airport Station</p>
-            <p><b>3) รถไฟ:</b> Nankai Airport Express</p>
-            <p><b>4) บัตรที่ใช้:</b> ICOCA หรือซื้อตั๋วเที่ยวเดียว</p>
-            <p><b>5) ค่าโดยสาร:</b> 970 เยน/คน (ประมาณ 230 บาท)</p>
-            <p><b>6) เวลา:</b> ประมาณ 45 นาที</p>
-            <p><b>7) ลง:</b> Namba Station</p>
+            <p>
+              ขึ้น <b>Nankai Airport Express</b> จาก Kansai Airport Station
+              แล้วลง Namba ใช้เวลาประมาณ 45 นาที
+            </p>
+            <p>970 เยน/คน · ใช้ ICOCA หรือซื้อตั๋วเที่ยวเดียว</p>
           </div>
           <div class="box warn">
-            <b>สำหรับมือใหม่:</b> ถ้าไม่มั่นใจ ให้เปิด Google Maps แล้วโชว์คำว่า
-            “Namba Station” ให้เจ้าหน้าที่ดู
+            หาไม่เจอ เปิด “Namba Station” ใน Google Maps ให้เจ้าหน้าที่ดูได้
           </div>
         </details>
         <details>
-          <summary>💳 ทำ ICOCA ตรงไหนและใช้ยังไง</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">💳</span> ซื้อและเติมเงิน ICOCA</span></summary>
           <p>
             ทำที่ตู้/เคาน์เตอร์สถานีรถไฟในสนามบิน หรือเพิ่มใน Apple Wallet
             ถ้าเครื่องรองรับ
           </p>
-          <p><b>เติมครั้งแรก:</b> 3,000 เยน/คน (ประมาณ 700 บาท)</p>
+          <p><b>เติมครั้งแรก:</b> 3,000 เยน/คน</p>
           <p><b>วิธีใช้:</b> แตะเข้า → ขึ้นรถ → แตะออก ระบบหักเงินเอง</p>
           <div class="mock">
             <div class="pic">💳</div>
             <div>
-              <b>ภาพจำง่าย ๆ:</b> มองหาเครื่อง/ป้ายคำว่า IC Card / ICOCA /
-              Charge
+              มองหาตู้ที่เขียนว่า IC Card / ICOCA / Charge
             </div>
           </div>
         </details>
@@ -1365,19 +1349,18 @@
                 เดินย่าน Dotonbori
               </button>
               / Shinsaibashi</b
-            ><br />วันนี้เน้นเดินสำรวจ ซื้อของใช้ ของกิน น้ำดื่ม
-            และทำความคุ้นกับเมือง
+            ><br />เดินเล่น หาอะไรกิน และซื้อของใช้ที่จำเป็น
           </div>
         </div>
         <div class="box">
-          <h3>🍜 ร้านกินง่าย ไม่แพงเกิน</h3>
+          <h3><span class="decorative-icon" aria-hidden="true">🍜</span> ร้านใกล้ ๆ</h3>
           <p>
             Ichiran, Kinryu Ramen, Coco Ichibanya, Matsuya, Sukiya, ร้าน
             Takoyaki แถว Dotonbori
           </p>
         </div>
         <div class="box ok">
-          <b>สรุปค่าใช้จ่ายวันนี้:</b>
+          <b>ค่าใช้จ่ายคร่าว ๆ</b>
           <ul class="cost-list">
             <li>รถไฟ KIX → Namba: 970 เยน</li>
             <li>เติม ICOCA: 3,000 เยน</li>
@@ -1385,21 +1368,16 @@
             <li>เผื่อน้ำ/ขนม: 500–1,000 เยน</li>
           </ul>
           <p class="cost-total">
-            รวมประมาณ 5,470–6,970 เยน/คน (≈ 1,260–1,600 บาท)
+            รวมประมาณ 5,470–6,970 เยน/คน
           </p>
         </div>
         <div class="box warn">
-          <b>ไม่ควรทำวันนี้:</b> อย่าไป Kyoto ต่อ, อย่าซื้อของฝากหนัก ๆ
-          วันแรก, อย่าเดินจนดึกมาก เพราะ Day 2 ตื่น 06:00
+          คืนนี้พักเร็วหน่อย พรุ่งนี้ออกแต่เช้า
         </div>
       </section>
       <section class="card" id="day2">
-        <h2>⛩️ DAY 2 — 11 OCT: Kyoto East</h2>
-        <p>
-          <span class="badge orange">Start 06:00</span
-          ><span class="badge green">ใช้ ICOCA</span
-          ><span class="badge blue">Fushimi → Higashiyama → Gion</span>
-        </p>
+        <h2><span class="decorative-icon" aria-hidden="true">⛩️</span> Day 2 · 11 Oct — Kyoto East</h2>
+        <p class="small">ออก 06:00 · Fushimi Inari → Higashiyama → Gion</p>
         <div class="step">
           <div class="time">06:45</div>
           <div class="icon">🚶</div>
@@ -1412,53 +1390,46 @@
           </div>
         </div>
         <details open>
-          <summary>🚇 โรงแรม → Fushimi Inari แบบเดินตามได้</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">🚇</span> โรงแรม → Fushimi Inari</span></summary>
           <div class="route">
-            <p><b>เส้นทาง:</b> Osaka Metro Midosuji Line → Keihan Main Line</p>
-            <p>1) แตะ ICOCA เข้า <b>Shinsaibashi Station</b></p>
-            <p>
-              2) ขึ้น <b>Osaka Metro Midosuji Line</b> ไป
-              <b>Yodoyabashi Station</b> ประมาณ 6 นาที
-            </p>
-            <p>
-              3) เดินตามป้าย <b>Keihan Railway</b> แล้วขึ้นชานชาลาฝั่ง
-              <b>Kyoto / Demachiyanagi</b>
-            </p>
+            <p class="route-title">Osaka Metro Midosuji Line → Keihan Main Line</p>
+            <ol class="route-steps">
+              <li>แตะ ICOCA เข้า <b>Shinsaibashi Station</b></li>
+              <li>
+                ขึ้น <b>Osaka Metro Midosuji Line</b> ไป
+                <b>Yodoyabashi Station</b> ประมาณ 6 นาที
+              </li>
+              <li>
+                เดินตามป้าย <b>Keihan Railway</b> แล้วขึ้นชานชาลาฝั่ง
+                <b>Kyoto / Demachiyanagi</b>
+              </li>
+              <li>
+                ขึ้น Limited Express/Express ถ้าขบวนไม่จอด
+                <b>Fushimi-Inari</b> ให้เปลี่ยนเป็น Local ที่
+                <b>Tambabashi</b> หรือ <b>Chushojima</b>
+              </li>
+              <li>
+                ลง <b>Fushimi-Inari Station</b> แล้วเดิน 2–5 นาทีถึงศาลเจ้า
+              </li>
+            </ol>
             <div class="sign green">KEIHAN LINE / KYOTO</div>
-            <p>
-              4) ขึ้น Limited Express/Express แล้วถ้าขบวนไม่จอด
-              <b>Fushimi-Inari</b> ให้เปลี่ยนเป็น Local ที่
-              <b>Tambabashi</b> หรือ <b>Chushojima</b>
-            </p>
-            <p>
-              5) ลง <b>Fushimi-Inari Station</b> เดิน 2–5 นาทีถึงศาลเจ้า
-            </p>
-            <p>
-              <b>เวลา:</b> 55–75 นาที | <b>ค่าโดยสาร:</b> 650–850 เยน |
+            <p class="route-meta">
+              <b>เวลา:</b> 55–75 นาที · <b>ค่าโดยสาร:</b> 650–850 เยน ·
               <b>ICOCA:</b> แตะเข้า/ออกได้ทั้ง Metro และ Keihan
             </p>
           </div>
         </details>
         <details>
-          <summary>⛩️ Fushimi Inari</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">⛩️</span> Fushimi Inari</span></summary>
           <p>
             <button class="place-link" type="button" data-map-place="fushimi">
               เปิด Fushimi Inari บนแผนที่
             </button>
           </p>
-          <p><b>Estimated visiting time:</b> 08:00–10:00 ประมาณ 90–120 นาที</p>
-          <p><b>Walking distance:</b> 2–4 กม. ตามแรง เดินถึงจุดชมวิวกลางเขาก็พอ</p>
-          <p>
-            <b>Photo spots:</b> เสาแดงช่วงต้นทาง, ทางแยก Senbon Torii,
-            จุดที่เสาเริ่มโล่งขึ้นหลังเดินขึ้นไปสักพัก
-          </p>
-          <p>
-            <b>Local food:</b> Inari sushi, kitsune udon, taiyaki หรือกาแฟใกล้สถานี
-          </p>
-          <p><b>Rest area:</b> ร้านชา/คาเฟ่หน้า shrine และม้านั่งแถวทางลง</p>
+          <p><b>08:00–10:00</b> · เดินประมาณ 2–4 กม.</p>
+          <p>เดินถึงจุดชมวิวกลางเขาก็พอ ขากลับค่อยหา Inari sushi หรือ kitsune udon แถวสถานี</p>
           <div class="box warn">
-            <b>Common mistakes:</b> ไปสายเกินแล้วคนแน่น, ฝืนเดินขึ้นยอดเขา,
-            ถ่ายรูปขวางทางเดิน และลืมว่าต้องกลับลงทางเดิมบางช่วง
+            หลัง 09:00 คนเริ่มเยอะ ไม่ต้องฝืนเดินถึงยอดเขา
           </div>
         </details>
         <div class="step">
@@ -1471,14 +1442,14 @@
           </div>
         </div>
         <details>
-          <summary>🏯 Kiyomizu-dera</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">🏯</span> Kiyomizu-dera</span></summary>
           <div class="route">
             <p>
-              <b>Transportation:</b> Keihan Main Line จาก Fushimi-Inari →
+              <b>รถไฟ:</b> Keihan Main Line จาก Fushimi-Inari →
               Kiyomizu-Gojo ประมาณ 10–15 นาที ค่าโดยสาร 220–300 เยน ใช้ ICOCA ได้
             </p>
             <p>
-              <b>Walking distance:</b> จาก Kiyomizu-Gojo ถึงวัดประมาณ 1.6–1.9 กม.
+              <b>เดิน:</b> จาก Kiyomizu-Gojo ถึงวัดประมาณ 1.6–1.9 กม.
               เป็นทางขึ้นเนิน ใช้เวลา 25–35 นาที
             </p>
           </div>
@@ -1487,96 +1458,62 @@
               เปิด Kiyomizu-dera บนแผนที่
             </button>
           </p>
-          <p><b>Estimated visiting time:</b> 11:00–12:30 ประมาณ 90 นาที</p>
-          <p><b>Photo spots:</b> เวทีไม้, มุมเจดีย์สามชั้น, วิวเมือง Kyoto</p>
-          <p><b>Local food:</b> yuba, matcha soft serve, yatsuhashi</p>
-          <p><b>Rest area:</b> ม้านั่งในโซนวัดและร้านน้ำก่อนลง Sannenzaka</p>
+          <p><b>11:00–12:30</b> · เวทีไม้ เจดีย์สามชั้น และวิวเมือง</p>
+          <p>ของกินแถวนี้มี yuba, matcha soft serve และ yatsuhashi</p>
           <div class="box warn">
-            <b>Common mistakes:</b> ประเมินทางขึ้นต่ำไป, ใส่รองเท้าไม่เหมาะ,
-            ไม่เผื่อเวลาคิวถ่ายรูป และเดินย้อนลงผิดฝั่งจนเสียเวลา
+            ทางขึ้นค่อนข้างชัน เผื่อแรงและเวลาไว้หน่อย
           </div>
         </details>
         <details>
-          <summary>🍡 Sannenzaka</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">🍡</span> Sannenzaka</span></summary>
           <p>
             <button class="place-link" type="button" data-map-place="sannenzaka">
               เปิด Sannenzaka บนแผนที่
             </button>
           </p>
-          <p><b>Transportation:</b> เดินลงจาก Kiyomizu-dera 5–8 นาที</p>
-          <p><b>Train line / fare / ICOCA:</b> ไม่ต้องขึ้นรถ ช่วงนี้เดินต่อเนื่อง ไม่มีค่าโดยสารเพิ่ม</p>
-          <p><b>Walking distance:</b> 400–700 ม. ในย่านทางลาดและบันได</p>
-          <p><b>Estimated visiting time:</b> 12:30–13:30 รวมแวะกินขนม</p>
-          <p><b>Photo spots:</b> ทางลาดหิน, บ้านไม้เก่า, มุมร้านขนมสองข้างทาง</p>
-          <p><b>Local food:</b> dango, warabimochi, matcha latte</p>
-          <p><b>Rest area:</b> คาเฟ่และร้านชาในซอย แนะนำพักก่อนเดินต่อ</p>
-          <div class="box warn">
-            <b>Common mistakes:</b> หยุดถ่ายกลางทางแคบ, เดินสวนคนโดยไม่ชิดซ้าย,
-            ซื้อของหนักตั้งแต่ต้นวัน
-          </div>
+          <p><b>12:30–13:30</b> · เดินลงจากวัด 5–8 นาที</p>
+          <p>แวะ dango, warabimochi หรือร้านชาได้ ทางเดินแคบและมีบันได</p>
         </details>
         <details>
-          <summary>🍵 Ninenzaka</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">🍵</span> Ninenzaka</span></summary>
           <p>
             <button class="place-link" type="button" data-map-place="ninenzaka">
               เปิด Ninenzaka บนแผนที่
             </button>
           </p>
-          <p><b>Transportation:</b> เดินต่อจาก Sannenzaka 3–5 นาที</p>
-          <p><b>Train line / fare / ICOCA:</b> ไม่ต้องขึ้นรถ ไม่มีค่าโดยสารเพิ่ม</p>
-          <p><b>Walking distance:</b> 300–600 ม. ทางเดินหิน คนเยอะช่วงบ่าย</p>
-          <p><b>Estimated visiting time:</b> 13:30–14:30</p>
-          <p><b>Photo spots:</b> บันไดหิน, ร้านไม้, มุมถนนโค้งช่วงลงเนิน</p>
-          <p><b>Local food:</b> matcha parfait, Kyoto coffee, croquette</p>
-          <p><b>Rest area:</b> Starbucks Kyoto Ninenzaka หรือคาเฟ่เล็กใกล้ทางออก</p>
-          <div class="box warn">
-            <b>Common mistakes:</b> วางแผนกินร้านดังโดยไม่เผื่อคิว,
-            เดินชนคนเพราะดูมือถือ และลืมเช็กทางไป Yasaka Shrine
-          </div>
+          <p><b>13:30–14:30</b> · เดินต่อจาก Sannenzaka 3–5 นาที</p>
+          <p>เดินดูร้านไม้เก่า แวะคาเฟ่ แล้วไปต่อทาง Nene-no-Michi</p>
         </details>
         <details>
-          <summary>🏮 Yasaka Shrine</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">🏮</span> Yasaka Shrine</span></summary>
           <div class="route">
             <p>
-              <b>Transportation:</b> เดินจาก Ninenzaka ผ่าน Nene-no-Michi ไป
+              <b>เดิน:</b> จาก Ninenzaka ผ่าน Nene-no-Michi ไป
               <b>Yasaka Shrine</b> ประมาณ 15–20 นาที ไม่ต้องขึ้นรถ
             </p>
-            <p><b>ICOCA:</b> ไม่ได้ใช้ช่วงนี้ เพราะเดินเที่ยวต่อเนื่อง</p>
           </div>
           <p>
             <button class="place-link" type="button" data-map-place="yasaka">
               เปิด Yasaka Shrine บนแผนที่
             </button>
           </p>
-          <p><b>Estimated visiting time:</b> 15:00–15:45</p>
-          <p><b>Photo spots:</b> ประตูแดง, โคมไฟ, มุมทางเข้า Maruyama Park</p>
-          <p><b>Local food:</b> yakitori/snack หน้า shrine หรือของหวานย่าน Gion</p>
-          <p><b>Rest area:</b> Maruyama Park มีพื้นที่นั่งพักและห้องน้ำ</p>
-          <div class="box warn">
-            <b>Common mistakes:</b> เดินผ่านเร็วเกินไป, ไม่พักเท้าก่อนเข้า Gion,
-            และถ่ายรูปติดพิธีโดยไม่สังเกตพื้นที่ห้ามเข้า
-          </div>
+          <p><b>15:00–15:45</b> · เดินชมศาลเจ้าแล้วพักที่ Maruyama Park</p>
         </details>
         <details>
-          <summary>🌙 Gion</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">🌙</span> Gion</span></summary>
           <p>
             <button class="place-link" type="button" data-map-place="gion">
               เปิด Gion บนแผนที่
             </button>
           </p>
           <p>
-            <b>Transportation:</b> เดินจาก Yasaka Shrine 5–10 นาที ไป Hanamikoji
+            <b>เดิน:</b> จาก Yasaka Shrine 5–10 นาที ไป Hanamikoji
             หรือ Shirakawa
           </p>
-          <p><b>Train line / fare / ICOCA:</b> ไม่ต้องขึ้นรถจนกว่าจะกลับ Osaka ทาง Gion-Shijo Station</p>
-          <p><b>Walking distance:</b> 1–2 กม. แล้วแต่เดินลึกแค่ไหน</p>
-          <p><b>Estimated visiting time:</b> 16:00–18:00</p>
-          <p><b>Photo spots:</b> Hanamikoji, Gion Shirakawa, สะพานเล็กริมคลอง</p>
-          <p><b>Local food:</b> soba, obanzai, matcha dessert, izakaya เบา ๆ</p>
-          <p><b>Rest area:</b> คาเฟ่ริม Shirakawa หรือกลับไปนั่งแถว Kawaramachi</p>
+          <p><b>16:00–18:00</b> · เดินประมาณ 1–2 กม.</p>
+          <p>Hanamikoji → Gion Shirakawa แล้วหาอะไรกินก่อนกลับโอซาก้า</p>
           <div class="box warn">
-            <b>Common mistakes:</b> ถ่ายรูปคนท้องถิ่นใกล้เกินไป,
-            เข้า private alley, หวังว่าจะเห็น geisha แน่นอน และกลับ Osaka ดึกเกิน
+            ไม่ถ่ายคนใกล้ ๆ และไม่เข้าเขตส่วนบุคคล (private property)
           </div>
         </details>
         <div class="step">
@@ -1590,7 +1527,7 @@
           </div>
         </div>
         <div class="box ok">
-          <b>สรุปค่าใช้จ่ายวันนี้:</b>
+          <b>ค่าใช้จ่ายคร่าว ๆ</b>
           <ul class="cost-list">
             <li>รถไฟ Osaka ↔ Kyoto East และเดินทางในเมือง: 1,500–2,200 เยน</li>
             <li>ค่าเข้า Kiyomizu-dera: ประมาณ 500 เยน</li>
@@ -1598,148 +1535,103 @@
             <li>เผื่อน้ำ/ขนม: 500–1,000 เยน</li>
           </ul>
           <p class="cost-total">
-            รวมประมาณ 4,500–7,200 เยน/คน (≈ 1,040–1,660 บาท)
+            รวมประมาณ 4,500–7,200 เยน/คน
           </p>
         </div>
       </section>
       <section class="card" id="day3">
-        <h2>🎋 DAY 3 — 12 OCT: Kyoto West</h2>
-        <p>
-          <span class="badge orange">Start 06:00</span
-          ><span class="badge green">ใช้ ICOCA</span
-          ><span class="badge blue">Arashiyama + Kinkaku-ji optional</span>
-        </p>
+        <h2><span class="decorative-icon" aria-hidden="true">🎋</span> Day 3 · 12 Oct — Arashiyama / Kyoto West</h2>
+        <p class="small">ออก 06:00 · Kinkaku-ji เป็นแผนเสริม ถ้ายังมีแรง</p>
         <details open>
-          <summary>🚆 Osaka → Arashiyama แบบแนะนำ</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">🚆</span> Osaka → Arashiyama</span></summary>
           <div class="route">
-            <p><b>เส้นทางหลัก:</b> Osaka Metro → Hankyu Kyoto Line → Hankyu Arashiyama Line</p>
-            <p>1) จากโรงแรมไป <b>Umeda / Osaka-Umeda Station</b></p>
-            <p>
-              2) ขึ้น <b>Hankyu Kyoto Line</b> ไป <b>Katsura Station</b>
-              ฝั่ง Kyoto
-            </p>
-            <p>
-              3) เปลี่ยนเป็น <b>Hankyu Arashiyama Line</b> ไป
-              <b>Arashiyama Station</b>
-            </p>
+            <p class="route-title">Osaka Metro → Hankyu Kyoto Line → Hankyu Arashiyama Line</p>
+            <ol class="route-steps">
+              <li>จากโรงแรมไป <b>Umeda / Osaka-Umeda Station</b></li>
+              <li>
+                ขึ้น <b>Hankyu Kyoto Line</b> ไป <b>Katsura Station</b>
+                ฝั่ง Kyoto
+              </li>
+              <li>
+                เปลี่ยนเป็น <b>Hankyu Arashiyama Line</b> ไป
+                <b>Arashiyama Station</b>
+              </li>
+            </ol>
             <div class="sign orange">HANKYU KYOTO LINE → ARASHIYAMA LINE</div>
-            <p>
-              <b>Travel time:</b> 65–85 นาที | <b>Fare:</b> 650–900 เยน |
-              <b>ICOCA:</b> ใช้ได้ | <b>Platform tip:</b>
-              ที่ Katsura ให้ตามป้าย Arashiyama Line อย่าออกนอก gate
+            <p class="route-meta">
+              <b>เวลา:</b> 65–85 นาที · <b>ค่าโดยสาร:</b> 650–900 เยน · ใช้ ICOCA ได้
+              ที่ Katsura ตามป้าย Arashiyama Line โดยไม่ต้องออกจากสถานี
             </p>
           </div>
         </details>
         <details>
-          <summary>🎋 Arashiyama Bamboo Grove</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">🎋</span> Arashiyama Bamboo Grove</span></summary>
           <p>
             <button class="place-link" type="button" data-map-place="bamboo">
               เปิด Arashiyama Bamboo Grove บนแผนที่
             </button>
           </p>
-          <p><b>Transportation:</b> เดินจาก Hankyu Arashiyama Station 15–20 นาที</p>
-          <p><b>Fare / ICOCA:</b> ไม่มีค่าเดินทางเพิ่มหลังออกสถานี ใช้ ICOCA เฉพาะตอนนั่งรถไฟมา</p>
-          <p><b>Walking distance:</b> 1.2–1.6 กม. จากสถานีถึงป่าไผ่</p>
-          <p><b>Estimated stay:</b> 07:45–08:45 ประมาณ 45–60 นาที</p>
-          <p><b>Best photo spots:</b> ทางเดินไผ่ช่วงกลาง, มุมใกล้ Tenryu-ji North Gate</p>
-          <p><b>Recommended food:</b> ยังไม่ควรกินหนัก แนะนำกาแฟ/ขนมเล็ก ๆ</p>
-          <p><b>Recommended cafe:</b> % Arabica Kyoto Arashiyama ถ้าคิวไม่ยาว</p>
+          <p><b>07:45–08:45</b> · เดินจากสถานี 15–20 นาที</p>
+          <p>ทางเดินช่วงกลางและฝั่ง Tenryu-ji North Gate ถ่ายรูปสวยกว่า</p>
           <div class="box warn">
-            <b>Common mistakes:</b> มาถึงสายเกิน 09:00, คาดหวังว่าทางเดินจะยาวมาก,
-            ถ่ายรูปกลางทางนาน และลืมว่าแสงเช้าสวยกว่า
+            พยายามมาถึงก่อน 09:00 ช่วงสายคนแน่นเร็ว
           </div>
         </details>
         <details>
-          <summary>🏯 Tenryu-ji</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">🏯</span> Tenryu-ji</span></summary>
           <p>
             <button class="place-link" type="button" data-map-place="tenryuji">
               เปิด Tenryu-ji บนแผนที่
             </button>
           </p>
-          <p><b>Transportation:</b> เดินจาก Bamboo Grove 3–8 นาที</p>
-          <p><b>Fare / ICOCA:</b> ไม่มีค่าเดินทางเพิ่ม เป็นเส้นทางเดินต่อจากป่าไผ่</p>
-          <p><b>Walking distance:</b> 300–600 ม.</p>
-          <p><b>Estimated stay:</b> 09:00–10:15 ประมาณ 60–75 นาที</p>
-          <p><b>Best photo spots:</b> สวน Sogenchi, ฉากภูเขา, ทางเดินออกฝั่งป่าไผ่</p>
-          <p><b>Recommended food:</b> yudofu หรือ soba แถวหน้าวัดช่วงสาย</p>
-          <p><b>Recommended cafe:</b> ร้านชาใกล้ Tenryu-ji หรือคาเฟ่ใน shopping street</p>
-          <div class="box warn">
-            <b>Common mistakes:</b> เดินข้ามสวนเพราะคิดว่าเป็นแค่วัด,
-            ไม่เผื่อค่าเข้า และรีบไปสะพานจนพลาดมุมสวน
-          </div>
+          <p><b>09:00–10:15</b> · เดินจากป่าไผ่ 3–8 นาที</p>
+          <p>ใช้เวลากับสวน Sogenchi หน่อย แล้วออกฝั่งถนนช้อปปิ้ง</p>
         </details>
         <details>
-          <summary>🌉 Togetsukyo Bridge</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">🌉</span> Togetsukyo Bridge</span></summary>
           <p>
             <button class="place-link" type="button" data-map-place="togetsukyo">
               เปิด Togetsukyo Bridge บนแผนที่
             </button>
           </p>
-          <p><b>Transportation:</b> เดินจาก Tenryu-ji 8–12 นาที</p>
-          <p><b>Fare / ICOCA:</b> ไม่มีค่าเดินทางเพิ่ม เดินตามป้ายไปสะพานได้เลย</p>
-          <p><b>Walking distance:</b> 700–900 ม.</p>
-          <p><b>Estimated stay:</b> 10:30–11:15</p>
-          <p><b>Best photo spots:</b> ริมแม่น้ำก่อนขึ้นสะพาน, กลางสะพาน, ฝั่งสวนริมแม่น้ำ</p>
-          <p><b>Recommended food:</b> croquette, soft serve, grilled snack แถวสะพาน</p>
-          <p><b>Recommended cafe:</b> คาเฟ่ริม Katsura River ถ้าเจอที่นั่งว่าง</p>
-          <div class="box warn">
-            <b>Common mistakes:</b> ยืนถ่ายรูปกีดทาง, ไม่ระวังรถ/จักรยาน,
-            และเดินข้ามไปมาโดยไม่ดูจุดถ่ายจากริมแม่น้ำ
-          </div>
+          <p><b>10:30–11:15</b> · เดินจาก Tenryu-ji 8–12 นาที</p>
+          <p>มุมริมแม่น้ำถ่ายง่ายกว่ากลางสะพาน และไม่กีดทางคนเดิน</p>
         </details>
         <details>
-          <summary>🛍️ Arashiyama Shopping Street</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">🛍️</span> Arashiyama Shopping Street</span></summary>
           <p>
             <button class="place-link" type="button" data-map-place="arashiyama_street">
               เปิด Arashiyama Shopping Street บนแผนที่
             </button>
           </p>
-          <p><b>Transportation:</b> เดินจาก Togetsukyo Bridge 3–8 นาที</p>
-          <p><b>Fare / ICOCA:</b> ไม่มีค่าเดินทางเพิ่ม ใช้เงินสด/บัตรเฉพาะร้านค้า</p>
-          <p><b>Walking distance:</b> 500–900 ม. แล้วแต่แวะร้าน</p>
-          <p><b>Estimated stay:</b> 11:15–12:45</p>
-          <p><b>Best photo spots:</b> หน้าร้านขนม, Randen Arashiyama Station, Kimono Forest</p>
-          <p><b>Recommended food:</b> yuba croquette, matcha dessert, Kyoto-style lunch set</p>
-          <p><b>Recommended cafe:</b> eX cafe Kyoto Arashiyama หรือร้านที่คิวสั้นกว่า</p>
-          <div class="box warn">
-            <b>Common mistakes:</b> ใช้เวลากับร้านของฝากนานเกิน,
-            กินจุกจิกจนข้ามมื้อกลางวัน และไม่เช็กเวลารถไปจุดถัดไป
-          </div>
+          <p><b>11:15–12:45</b> · เดินจากสะพาน 3–8 นาที</p>
+          <p>หาอาหารกลางวันแถวนี้ แล้วเดินดู Randen Station กับ Kimono Forest</p>
         </details>
         <details>
-          <summary>☕ Riverside Cafe</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">☕</span> Riverside Cafe</span></summary>
           <p>
             <button class="place-link" type="button" data-map-place="riverside_cafe">
               เปิด Riverside Cafe บนแผนที่
             </button>
           </p>
-          <p><b>Transportation:</b> เดินกลับไปริม Katsura River 5–10 นาที</p>
-          <p><b>Fare / ICOCA:</b> ไม่มีค่าเดินทางเพิ่ม เตรียมเงินสดเผื่อคาเฟ่เล็ก</p>
-          <p><b>Walking distance:</b> 400–800 ม.</p>
-          <p><b>Estimated stay:</b> 13:00–14:00 พักเท้า 45–60 นาที</p>
-          <p><b>Best photo spots:</b> โต๊ะริมหน้าต่าง, ริมแม่น้ำ, วิวสะพานจากฝั่งคาเฟ่</p>
-          <p><b>Recommended food:</b> กาแฟ, matcha, cake หรือ light lunch</p>
-          <p><b>Recommended cafe:</b> % Arabica / Arabica-adjacent riverside cafes หรือร้านริมแม่น้ำที่มีที่นั่ง</p>
-          <div class="box warn">
-            <b>Common mistakes:</b> ต่อคิวนานทั้งที่เหนื่อย, ไม่ดื่มน้ำ,
-            และไม่ตัดสินใจว่าจะไป Kinkaku-ji ต่อหรือกลับ Osaka
-          </div>
+          <p><b>13:00–14:00</b> · พักแถวริม Katsura River</p>
+          <p>เลือกร้านที่มีที่นั่งและคิวไม่ยาว แล้วค่อยตัดสินใจว่าจะไป Kinkaku-ji ต่อไหม</p>
         </details>
         <details>
-          <summary>🌟 Kinkaku-ji optional ถ้ายังมีแรง</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">🌟</span> Kinkaku-ji (ถ้ายังมีแรง)</span></summary>
           <div class="route">
             <p>
-              <b>Transportation:</b> จาก Arashiyama ไป <b>Randen Arashiyama Station</b>
+              <b>เส้นทาง:</b> จาก Arashiyama ไป <b>Randen Arashiyama Station</b>
               ขึ้น <b>Randen Arashiyama Line</b> ไป <b>Kitano-Hakubaicho</b>
               แล้วต่อ Kyoto City Bus ไป <b>Kinkakuji-michi</b>
             </p>
             <p>
-              <b>Bus information:</b> เช็ก Google Maps วันจริง หมายเลขรถอาจเปลี่ยนตามเวลา
+              เช็ก Google Maps วันจริง เพราะหมายเลขรถอาจเปลี่ยนตามเวลา
               ใช้ ICOCA แตะขึ้น/ลงได้บนรถบัสส่วนใหญ่
             </p>
             <p>
-              <b>Travel time:</b> 45–70 นาที | <b>Fare:</b> 500–800 เยน |
-              <b>Walking distance:</b> จากป้ายถึงทางเข้าประมาณ 5–10 นาที
+              <b>เวลา:</b> 45–70 นาที · <b>ค่าโดยสาร:</b> 500–800 เยน ·
+              จากป้ายเดินถึงทางเข้า 5–10 นาที
             </p>
           </div>
           <p>
@@ -1747,13 +1639,9 @@
               เปิด Kinkaku-ji บนแผนที่
             </button>
           </p>
-          <p><b>Estimated stay:</b> 15:15–16:15 ประมาณ 45–60 นาที</p>
-          <p><b>Best photo spots:</b> ริมสระหน้า Golden Pavilion, มุมทางเดินวนหลังวัด</p>
-          <p><b>Recommended food:</b> matcha sweet หรือ snack หน้าทางออก</p>
-          <p><b>Recommended cafe:</b> พักสั้น ๆ ใกล้ป้าย Kinkakuji-michi ก่อนกลับ</p>
+          <p><b>15:15–16:15</b> · เดินชมรอบสระประมาณ 45–60 นาที</p>
           <div class="box warn">
-            <b>Common mistakes:</b> ฝืนไปทั้งที่หมดแรง, ไปถึงใกล้เวลาปิด,
-            ไม่เผื่อรถติดของรถบัส และคิดว่าอยู่ใกล้ Arashiyama ทั้งที่ต้องต่อรถ
+            ถ้าออกจาก Arashiyama ช้าหรือเริ่มเหนื่อย ตัดจุดนี้ได้เลย
           </div>
         </details>
         <div class="step">
@@ -1767,35 +1655,22 @@
           </div>
         </div>
         <div class="box ok">
-          <b>Why Kyoto is worth two full days:</b>
-          <p>
-            Kyoto ใหญ่และกระจายเป็นหลายโซน การแยก East Kyoto กับ West Kyoto
-            ทำให้ไม่ต้องวิ่งข้ามเมืองไปมา ลดเวลาบนรถไฟ/บัส และทำให้ได้เดินย่านเก่า
-            วัด สะพาน คาเฟ่ และถนนช้อปปิ้งแบบสนุกกว่า ไม่ต้องเร่งทุกจุดให้จบในวันเดียว
-          </p>
-        </div>
-        <div class="box ok">
-          <b>สรุปค่าใช้จ่ายวันนี้:</b>
+          <b>ค่าใช้จ่ายคร่าว ๆ</b>
           <ul class="cost-list">
             <li>รถไฟ Osaka ↔ Arashiyama: 1,300–1,800 เยน</li>
-            <li>เดินทางเสริมไป Kinkaku-ji optional: 500–800 เยน</li>
+            <li>เดินทางไป Kinkaku-ji (ถ้าไป): 500–800 เยน</li>
             <li>ค่าเข้า Tenryu-ji / Kinkaku-ji: ประมาณ 1,000–1,300 เยน</li>
             <li>อาหาร/คาเฟ่ใน Arashiyama: 2,500–4,000 เยน</li>
             <li>เผื่อน้ำ/ขนม: 500–1,000 เยน</li>
           </ul>
           <p class="cost-total">
-            รวมประมาณ 5,800–8,900 เยน/คน (≈ 1,340–2,050 บาท)
+            รวมประมาณ 5,800–8,900 เยน/คน
           </p>
         </div>
       </section>
       <section class="card" id="day4">
-        <h2>🌊 DAY 4 — 13 OCT: Katsuo-ji + Kaiyukan + Osaka Night</h2>
-        <p>
-          <span class="badge blue">เพิ่มจากที่อยากไป</span
-          ><span class="badge green">Katsuo-ji</span
-          ><span class="badge blue">Kaiyukan</span
-          ><span class="badge orange">วันนี้แน่นที่สุด</span>
-        </p>
+        <h2><span class="decorative-icon" aria-hidden="true">🌊</span> Day 4 · 13 Oct — Katsuo-ji + Kaiyukan</h2>
+        <p class="small">วันนี้เดินทางเยอะ เผื่อเวลารถบัสไว้ด้วย</p>
         <div class="step">
           <div class="time">07:30</div>
           <div class="icon">🚇</div>
@@ -1809,32 +1684,24 @@
               >
                 Katsuo-ji
               </button></b
-            ><br />เปิด Google Maps ค้นหา
-            <b
-              ><button
-                class="place-link"
-                type="button"
-                data-map-place="katsuoji"
-              >
-                Katsuo-ji Temple
-              </button></b
-            >
-            แล้วเลือกเส้นทางรถไฟ + รถบัส
+            ><br />เช็กเส้นทางรถไฟและรอบรถบัสใน Google Maps ก่อนออก
           </div>
         </div>
         <div class="route">
-          <p><b>เส้นทางแนะนำ:</b> Osaka Metro → Kita-Osaka Kyuko → Hankyu Bus</p>
-          <p>
-            1) จาก <b>Shinsaibashi Station</b> ขึ้น
-            <b>Osaka Metro Midosuji Line</b> ไป <b>Senri-Chuo Station</b>
-            หรือ <b>Minoh-Kayano Station</b> ตาม Google Maps
-          </p>
-          <p>
-            2) ต่อ <b>Hankyu Bus</b> ไปป้ายใกล้ Katsuo-ji
-            ถ้ารอบบัสไม่ดีให้ใช้ taxi จาก Minoh-Kayano เป็นตัวสำรอง
-          </p>
-          <p>
-            <b>เวลา:</b> 75–105 นาที/ขา | <b>ค่าโดยสาร:</b> 900–1,400 เยน/ขา |
+          <p class="route-title">Osaka Metro → Kita-Osaka Kyuko → Hankyu Bus</p>
+          <ol class="route-steps">
+            <li>
+              จาก <b>Shinsaibashi Station</b> ขึ้น
+              <b>Osaka Metro Midosuji Line</b> ไป <b>Senri-Chuo Station</b>
+              หรือ <b>Minoh-Kayano Station</b> ตาม Google Maps
+            </li>
+            <li>
+              ต่อ <b>Hankyu Bus</b> ไปป้ายใกล้ Katsuo-ji
+              ถ้าต้องรอบัสนาน ค่อยเรียกแท็กซี่จาก Minoh-Kayano
+            </li>
+          </ol>
+          <p class="route-meta">
+            <b>เวลา:</b> 75–105 นาที/ขา · <b>ค่าโดยสาร:</b> 900–1,400 เยน/ขา ·
             <b>ICOCA:</b> ใช้ได้กับ Metro และบัสส่วนใหญ่
           </p>
           <p>
@@ -1855,8 +1722,7 @@
               >
                 Katsuo-ji Temple
               </button></b
-            ><br />วัดดารุมะ ขอพรเรื่องชัยชนะ/ความสำเร็จ ถ่ายรูป เดินประมาณ
-            60–90 นาที
+            ><br />เดินชมวัดและถ่ายรูปประมาณ 60–90 นาที
           </div>
         </div>
         <div class="step">
@@ -1873,32 +1739,34 @@
                 Kaiyukan
               </button></b
             ><br />จาก Katsuo-ji กลับมาฝั่ง Senri-Chuo/Minoh-Kayano
-            แล้วต่อ Osaka Metro ไป <b>Honmachi Station</b>
+            แล้วต่อ Osaka Metro ไป <b>Hommachi Station</b>
             เปลี่ยนเป็น <b>Osaka Metro Chuo Line</b> ไป
             <b>Osakako Station</b>
           </div>
         </div>
         <details>
-          <summary>🚇 Katsuo-ji → Kaiyukan / Tempozan</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">🚇</span> Katsuo-ji → Kaiyukan / Tempozan</span></summary>
           <div class="route">
-            <p>
-              <b>เส้นทาง:</b> Hankyu Bus → Kita-Osaka Kyuko / Osaka Metro
+            <p class="route-title">
+              Hankyu Bus → Kita-Osaka Kyuko / Osaka Metro
               Midosuji Line → Osaka Metro Chuo Line
             </p>
-            <p>
-              1) จากวัดกลับไปสถานี <b>Minoh-Kayano</b> หรือ <b>Senri-Chuo</b>
-              ตามรอบบัสจริง
-            </p>
-            <p>
-              2) นั่งสาย Midosuji ลง <b>Honmachi Station</b>
-              แล้วเปลี่ยนไป <b>Chuo Line</b> ฝั่ง <b>Cosmosquare</b>
-            </p>
-            <p>
-              3) ลง <b>Osakako Station</b> ทางออก 1 หรือ 2
-              เดิน 5–10 นาทีถึง Kaiyukan และ Tempozan Marketplace
-            </p>
-            <p>
-              <b>เวลา:</b> 80–110 นาที | <b>ค่าโดยสาร:</b> 900–1,500 เยน |
+            <ol class="route-steps">
+              <li>
+                จากวัดกลับไปสถานี <b>Minoh-Kayano</b> หรือ <b>Senri-Chuo</b>
+                ตามรอบบัสจริง
+              </li>
+              <li>
+                นั่งสาย Midosuji ลง <b>Hommachi Station</b>
+                แล้วเปลี่ยนไป <b>Chuo Line</b> ฝั่ง <b>Cosmosquare</b>
+              </li>
+              <li>
+                ลง <b>Osakako Station</b> ทางออก 1 หรือ 2
+                เดิน 5–10 นาทีถึง Kaiyukan และ Tempozan Marketplace
+              </li>
+            </ol>
+            <p class="route-meta">
+              <b>เวลา:</b> 80–110 นาที · <b>ค่าโดยสาร:</b> 900–1,500 เยน ·
               <b>ICOCA:</b> ใช้ได้
             </p>
             <p>
@@ -1920,11 +1788,11 @@
               >
                 Osaka Aquarium Kaiyukan
               </button></b
-            ><br />เดินดูอะควาเรียมประมาณ 2–3 ชั่วโมง จากนั้นเดิน
+            ><br />ใช้เวลาประมาณ 2–3 ชั่วโมง จากนั้นเดินไป
             <button class="place-link" type="button" data-map-place="tempozan">
               Tempozan Marketplace
             </button>
-            ต่อเพื่อพัก กินข้าว หรือซื้อของเบา ๆ
+            หาอะไรกินหรือพักก่อนกลับเข้าเมือง
           </div>
         </div>
         <div class="step">
@@ -1937,25 +1805,27 @@
                 type="button"
                 data-map-place="dotonbori"
               >
-                Dotonbori Night Walk
+                Dotonbori
               </button></b
-            ><br />กลับย่าน Namba/Shinsaibashi กินมื้อเย็น ซื้อของฝากรอบแรก
-            เดินดูไฟกลางคืน
+            ><br />กลับ Namba/Shinsaibashi กินมื้อเย็นและเดินเล่น
           </div>
         </div>
         <details>
-          <summary>🚇 Tempozan → Dotonbori Night</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">🚇</span> Tempozan → Dotonbori</span></summary>
           <div class="route">
-            <p>
-              1) เดินกลับ <b>Osakako Station</b>
-              ขึ้น <b>Osaka Metro Chuo Line</b> ไป <b>Hommachi Station</b>
-            </p>
-            <p>
-              2) เปลี่ยนเป็น <b>Midosuji Line</b> ไป <b>Namba Station</b>
-              แล้วเดิน 5–10 นาทีถึง Dotonbori
-            </p>
-            <p>
-              <b>เวลา:</b> 30–40 นาที | <b>ค่าโดยสาร:</b> 240–340 เยน |
+            <p class="route-title">Osaka Metro Chuo Line → Midosuji Line</p>
+            <ol class="route-steps">
+              <li>
+                เดินกลับ <b>Osakako Station</b> แล้วขึ้น
+                <b>Osaka Metro Chuo Line</b> ไป <b>Hommachi Station</b>
+              </li>
+              <li>
+                เปลี่ยนเป็น <b>Midosuji Line</b> ไป <b>Namba Station</b>
+                แล้วเดิน 5–10 นาทีถึง Dotonbori
+              </li>
+            </ol>
+            <p class="route-meta">
+              <b>เวลา:</b> 30–40 นาที · <b>ค่าโดยสาร:</b> 240–340 เยน ·
               <b>ICOCA:</b> ใช้ได้
             </p>
             <p>
@@ -1966,11 +1836,10 @@
           </div>
         </details>
         <div class="box warn">
-          <b>ถ้าวันนี้แน่นเกิน:</b> ให้ลดเวลา Tempozan หรือกลับ Dotonbori
-          แค่กินมื้อเย็นสั้น ๆ เพราะช่วง Katsuo-ji ใช้เวลารถบัสค่อนข้างมาก
+          ถ้ารถบัสจาก Katsuo-ji ช้า ตัด Tempozan หรือ Dotonbori ออกได้
         </div>
         <div class="box ok">
-          <b>สรุปค่าใช้จ่ายวันนี้:</b>
+          <b>ค่าใช้จ่ายคร่าว ๆ</b>
           <ul class="cost-list">
             <li>รถไฟ/บัสไป Katsuo-ji และกลับเข้าเมือง: 1,800–2,800 เยน</li>
             <li>ค่าเข้า Katsuo-ji: ประมาณ 500 เยน</li>
@@ -1979,12 +1848,12 @@
             <li>เผื่อน้ำ/ขนม: 500–1,000 เยน</li>
           </ul>
           <p class="cost-total">
-            รวมประมาณ 7,500–10,500 เยน/คน (≈ 1,730–2,420 บาท)
+            รวมประมาณ 7,500–10,500 เยน/คน
           </p>
         </div>
       </section>
       <section class="card" id="day5">
-        <h2>✈️ DAY 5 — 14 OCT: Shopping + กลับไทย</h2>
+        <h2><span class="decorative-icon" aria-hidden="true">✈️</span> Day 5 · 14 Oct — Shopping + Departure</h2>
         <div class="step">
           <div class="time">09:00</div>
           <div class="icon">🏨</div>
@@ -1997,13 +1866,12 @@
           <div class="icon">🛍️</div>
           <div>
             <b
-              >Shopping day: Don Quijote, Uniqlo, GU, Drug Store หรือแวะ
+              >Don Quijote, Uniqlo, GU, Drug Store หรือแวะ
               <button class="place-link" type="button" data-map-place="denden">
                 Den Den Town
               </button>
               สั้น ๆ</b
-            ><br />ซื้อของฝาก ของใช้ ร้านยา เสื้อผ้า และขนม
-            ถ้าอยากดูเกม/อิเล็กทรอนิกส์ให้ไป Den Den Town เป็น optional แล้วคุมเวลา
+            ><br />ถ้าจะไป Den Den Town ให้เผื่อเวลากลับมารับกระเป๋า
           </div>
         </div>
         <div class="step">
@@ -2015,13 +1883,16 @@
           </div>
         </div>
         <details>
-          <summary>🚆 โรงแรม → KIX แบบปลอดภัย</summary>
+          <summary><span><span class="decorative-icon" aria-hidden="true">🚆</span> โรงแรม → KIX</span></summary>
           <div class="route">
-            <p>1) เดิน/Metro ไป <b>Nankai Namba Station</b></p>
-            <p>2) ขึ้น <b>Nankai Airport Express</b></p>
-            <p>3) Namba → Kansai Airport</p>
-            <p>
-              <b>ค่าโดยสาร:</b> 970 เยน/คน | <b>เวลา:</b> ประมาณ 45 นาที |
+            <p class="route-title">Namba → Kansai International Airport</p>
+            <ol class="route-steps">
+              <li>เดินหรือนั่ง Metro ไป <b>Nankai Namba Station</b></li>
+              <li>ขึ้น <b>Nankai Airport Express</b></li>
+              <li>ลง <b>Kansai Airport Station</b></li>
+            </ol>
+            <p class="route-meta">
+              <b>ค่าโดยสาร:</b> 970 เยน/คน · <b>เวลา:</b> ประมาณ 45 นาที ·
               <b>บัตร:</b> ICOCA
             </p>
             <p>
@@ -2039,7 +1910,7 @@
               ><button class="place-link" type="button" data-map-place="kix">
                 ถึง KIX
               </button></b
-            ><br />เช็กอิน Peach, โหลดกระเป๋า 20kg x 2 คน, ผ่าน Security
+            ><br />Peach check-in → Checked baggage → Security check
           </div>
         </div>
         <div class="step">
@@ -2053,77 +1924,22 @@
           <div><b>ถึงสุวรรณภูมิ</b></div>
         </div>
         <div class="box warn">
-          <b>อย่าไปสนามบินช้า:</b> Peach ค่อนข้างเข้มเรื่องเวลา ควรถึง KIX
-          อย่างน้อย 2 ชั่วโมงก่อนบิน
+          ไปถึง KIX ก่อนบินอย่างน้อย 2 ชั่วโมง
         </div>
         <div class="box ok">
-          <b>สรุปค่าใช้จ่ายวันนี้:</b>
+          <b>ค่าใช้จ่ายคร่าว ๆ</b>
           <ul class="cost-list">
             <li>รถไฟ Namba → KIX: 970 เยน</li>
             <li>เผื่อน้ำ/ขนม: 500–1,000 เยน</li>
           </ul>
           <p class="cost-total">
-            รวมประมาณ 1,470–1,970 เยน/คน (≈ 340–460 บาท) ไม่รวมช้อปปิ้ง
+            รวมประมาณ 1,470–1,970 เยน/คน ไม่รวมช้อปปิ้ง
           </p>
         </div>
       </section>
-      <section class="card" id="emergency">
-        <h2>🚨 Emergency Guide</h2>
-        <div class="box warn">
-          <b>หลงทาง:</b> หยุดเดิน → เปิด Google Maps → กด Directions ใหม่ →
-          อย่าเดินมั่ว
-        </div>
-        <div class="box warn">
-          <b>เน็ตมีปัญหา:</b> เข้า 7-Eleven / FamilyMart / Lawson หรือกลับโรงแรม
-          ใช้ Wi‑Fi แล้วเช็ก eSIM
-        </div>
-        <div class="box warn">
-          <b>เงินสดหมด:</b> กด ATM ที่ 7-Eleven หรือใช้ YouTrip/บัตรเครดิตแทน
-        </div>
-        <div class="box warn">
-          <b>พาสปอร์ตหาย:</b> ติดต่อสถานทูต/สถานกงสุลไทย และแจ้งตำรวจญี่ปุ่นก่อน
-        </div>
-        <h3>คำศัพท์ป้าย</h3>
-        <table>
-          <tr>
-            <td>出口</td>
-            <td>ทางออก</td>
-          </tr>
-          <tr>
-            <td>入口</td>
-            <td>ทางเข้า</td>
-          </tr>
-          <tr>
-            <td>駅</td>
-            <td>สถานี</td>
-          </tr>
-          <tr>
-            <td>トイレ</td>
-            <td>ห้องน้ำ</td>
-          </tr>
-          <tr>
-            <td>乗換</td>
-            <td>เปลี่ยนสาย</td>
-          </tr>
-        </table>
-      </section>
       <section class="footer">
         <p>
-          หมายเหตุ: ใช้ไฟล์นี้เป็นคู่มือ Offline ได้ แต่วันเดินทางจริงให้เช็ก
-          Google Maps อีกครั้ง
-          เพราะเวลา/ชานชาลา/ค่าโดยสารอาจเปลี่ยนได้ตามวันและเวลาเดินทาง
-        </p>
-        <p>
-          แหล่งอ้างอิงหลัก: Nankai Railway, Osaka Metro, Keihan Railway,
-          Hankyu Railway, Kyoto City Bus,
-          <a
-            class="inline-link"
-            href="https://www.vjw.digital.go.jp/"
-            target="_blank"
-            rel="noopener"
-            >Visit Japan Web</a
-          >
-          และข้อมูลเส้นทางจากแผนที่สาธารณะ
+          เช็กเวลา ชานชาลา และค่าโดยสารใน Google Maps อีกครั้งวันเดินทาง
         </p>
       </section>
         </main>
@@ -2137,14 +1953,13 @@
     >
       <span class="mascot-shadow" aria-hidden="true"></span>
     </button>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
       const tripPlaces = [
         {
           id: "hotel",
           name: "ZONE SHINSAIBASHI WEST",
-          label: "🏨 โรงแรม",
-          day: "ที่พัก",
+          label: "🏨 Hotel",
+          day: "Accommodation",
           lat: 34.6722,
           lng: 135.496,
           zoom: 16,
@@ -2279,7 +2094,7 @@
           id: "kinkakuji",
           name: "Kinkaku-ji Kyoto",
           label: "🌟 Kinkaku-ji",
-          day: "Day 3 optional",
+          day: "Day 3 · Optional",
           lat: 35.0394,
           lng: 135.7292,
           zoom: 16,
@@ -2288,7 +2103,7 @@
           id: "denden",
           name: "Den Den Town",
           label: "🎮 Den Den Town",
-          day: "Day 5 option",
+          day: "Day 5 · Optional",
           lat: 34.6575,
           lng: 135.5062,
           zoom: 16,
@@ -2355,6 +2170,127 @@
         return `https://www.google.com/maps/search/?api=1&query=${query}`;
       }
 
+      const placeHours = {
+  "hotel": {
+    "text": "เช็กอิน / เช็กเอาท์: ดูใบจอง"
+  },
+  "namba": {
+    "text": "เวลาเดินทาง: ตามเที่ยวรถไฟ"
+  },
+  "kix": {
+    "text": "เวลาเช็กอิน: ตามเที่ยวบิน"
+  },
+  "dotonbori": {
+    "text": "เปิด–ปิด: แล้วแต่ร้าน"
+  },
+  "fushimi": {
+    "text": "พื้นที่ศาลเจ้า: 24 ชม.",
+    "note": "จุดบริการมีเวลาแยกต่างหาก",
+    "source": "https://www.google.com/maps/search/?api=1&query=Fushimi+Inari+Taisha"
+  },
+  "kiyomizu": {
+    "text": "เปิด 06:00 · ปิด 18:00",
+    "source": "https://www.kiyomizudera.or.jp/access/"
+  },
+  "sannenzaka": {
+    "text": "เปิด–ปิด: แล้วแต่ร้าน"
+  },
+  "ninenzaka": {
+    "text": "เปิด–ปิด: แล้วแต่ร้าน"
+  },
+  "yasaka": {
+    "text": "พื้นที่ศาลเจ้า: 24 ชม.",
+    "note": "สำนักงาน 09:00–17:00",
+    "source": "https://www.yasaka-jinja.or.jp/sanpai/"
+  },
+  "gion": {
+    "text": "เปิด–ปิด: แล้วแต่ร้าน"
+  },
+  "bamboo": {
+    "text": "ทางเดินกลางแจ้ง · ไปช่วงเช้า",
+    "source": "https://www.japan.travel/en/spot/1141/"
+  },
+  "tenryuji": {
+    "text": "เปิด 08:30 · ปิด 17:00",
+    "note": "เข้ารอบสุดท้าย 16:50",
+    "source": "https://www.tenryuji.com/en/visit/"
+  },
+  "togetsukyo": {
+    "text": "สะพานกลางแจ้ง · ไม่มีรอบเข้าชม"
+  },
+  "arashiyama_street": {
+    "text": "เปิด–ปิด: แล้วแต่ร้าน"
+  },
+  "riverside_cafe": {
+    "text": "ยังไม่เลือกร้าน · เวลาแล้วแต่ร้าน"
+  },
+  "kinkakuji": {
+    "text": "เปิด 09:00 · ปิด 17:00",
+    "source": "https://www.shokoku-ji.jp/en/kinkakuji/access/"
+  },
+  "denden": {
+    "text": "เปิด–ปิด: แล้วแต่ร้าน"
+  },
+  "katsuoji": {
+    "text": "เปิด 08:00 · ปิด 17:00",
+    "note": "13 ต.ค. · เข้ารอบสุดท้าย 16:30",
+    "source": "https://katsuo-ji-temple.or.jp/audioguidance/index.php"
+  },
+  "kaiyukan": {
+    "text": "13 ต.ค.: ยังไม่ยืนยันเวลา",
+    "note": "ดูปฏิทินทางการก่อนจอง",
+    "source": "https://www.kaiyukan.com/info/hours/"
+  },
+  "tempozan": {
+    "text": "13 ต.ค.: ยังไม่ยืนยันเวลา",
+    "note": "แต่ละโซนเปิด–ปิดต่างกัน",
+    "source": "https://www.kaiyukan.com/thv/marketplace/info.html"
+  }
+};
+
+      function setMapActionLabel(element, place) {
+        setPlaceLabel(element, place.label);
+        const hours = placeHours[place.id];
+        if (!hours) return;
+        const caption = document.createElement("span");
+        caption.className = "map-hours";
+        caption.textContent = hours.text;
+        element.appendChild(caption);
+        if (hours.note) {
+          const note = document.createElement("span");
+          note.className = "map-hours";
+          note.textContent = hours.note;
+          element.appendChild(note);
+        }
+      }
+
+      function mapHoursHtml(place) {
+        const hours = placeHours[place.id];
+        if (!hours) return "";
+        const source = hours.source
+          ? `<br><a href="${hours.source}" target="_blank" rel="noopener">ดูข้อมูลเวลาเปิด–ปิด</a>`
+          : "";
+        return `<br>${hours.text}${hours.note ? `<br>${hours.note}` : ""}${source}`;
+      }
+      function splitPlaceLabel(label) {
+        const [icon, ...words] = label.split(" ");
+        return { icon, text: words.join(" ") };
+      }
+
+      function setPlaceLabel(element, label) {
+        const { icon, text } = splitPlaceLabel(label);
+        const iconEl = document.createElement("span");
+        iconEl.className = "decorative-icon";
+        iconEl.setAttribute("aria-hidden", "true");
+        iconEl.textContent = icon;
+        element.append(iconEl, ` ${text}`);
+      }
+
+      function placeLabelHtml(label) {
+        const { icon, text } = splitPlaceLabel(label);
+        return `<span class="decorative-icon" aria-hidden="true">${icon}</span> ${text}`;
+      }
+
       function scrollMapSectionToTop() {
         const section = document.getElementById("trip-map-section");
         if (!section) return;
@@ -2388,6 +2324,11 @@
               "perf-mode",
               usePerformance,
             );
+            document.dispatchEvent(
+              new CustomEvent("trip-display-mode-change", {
+                detail: { usePerformance },
+              }),
+            );
 
             try {
               localStorage.setItem(
@@ -2401,38 +2342,35 @@
         });
       }
 
+      function loadLeaflet() {
+        if (window.L) return Promise.resolve();
+
+        const stylesheet = new Promise((resolve, reject) => {
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+          link.onload = resolve;
+          link.onerror = reject;
+          document.head.appendChild(link);
+        });
+        const library = new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+
+        return Promise.all([stylesheet, library]);
+      }
+
       function initTripMap() {
         const mapEl = document.getElementById("trip-map");
         const actionsEl = document.getElementById("map-actions");
 
-        if (!mapEl || !actionsEl) return;
+        if (!mapEl || !actionsEl || !window.L) return null;
 
-        function renderLinkActions() {
-          actionsEl.innerHTML = "";
-          tripPlaces.forEach((place) => {
-            const link = document.createElement("a");
-            link.href = googleMapsUrl(place);
-            link.target = "_blank";
-            link.rel = "noopener";
-            link.textContent = place.label;
-            actionsEl.appendChild(link);
-          });
-        }
-
-        renderLinkActions();
-
-        if (!window.L) {
-          mapEl.innerHTML =
-            '<div class="box warn">โหลดแผนที่ในไฟล์ไม่ได้บนแอป/เบราว์เซอร์นี้ ให้ใช้ปุ่มด้านล่างเปิด Google Maps แทน หรืออัปขึ้น Vercel แล้วเปิดผ่าน https</div>';
-          setMapPlaceOpener((id) => {
-            const place = tripPlaces.find((item) => item.id === id);
-            if (!place) return;
-
-            window.open(googleMapsUrl(place), "_blank", "noopener");
-          });
-          return;
-        }
-
+        mapEl.classList.remove("is-loading");
         actionsEl.innerHTML = "";
         const map = L.map(mapEl, { scrollWheelZoom: false }).setView(
           [34.69, 135.55],
@@ -2459,7 +2397,7 @@
           const marker = L.marker([place.lat, place.lng])
             .addTo(map)
             .bindPopup(
-              `<b>${place.label}</b><br>${place.day}<br><a class="map-popup-link" href="${googleMapsUrl(
+              `<b>${placeLabelHtml(place.label)}</b><br>${place.day}${mapHoursHtml(place)}<br><a class="map-popup-link" href="${googleMapsUrl(
                 place,
               )}" target="_blank" rel="noopener">เปิดใน Google Maps</a>`,
             );
@@ -2467,12 +2405,10 @@
 
           const button = document.createElement("button");
           button.type = "button";
-          button.textContent = place.label;
+          setMapActionLabel(button, place);
           button.addEventListener("click", () => openPlace(place.id));
           actionsEl.appendChild(button);
         });
-
-        setMapPlaceOpener(openPlace);
 
         dayRoutes.forEach((route, index) => {
           const points = route.map((id) => {
@@ -2492,6 +2428,60 @@
           tripPlaces.map((place) => [place.lat, place.lng]),
         );
         map.fitBounds(bounds, { padding: [24, 24] });
+        return openPlace;
+      }
+
+      function setupLazyMap() {
+        const mapEl = document.getElementById("trip-map");
+        const actionsEl = document.getElementById("map-actions");
+        if (!mapEl || !actionsEl) return;
+
+        tripPlaces.forEach((place) => {
+          const link = document.createElement("a");
+          link.href = googleMapsUrl(place);
+          link.target = "_blank";
+          link.rel = "noopener";
+          setMapActionLabel(link, place);
+          actionsEl.appendChild(link);
+        });
+
+        let mapPromise = null;
+        function ensureMap() {
+          if (mapPromise) return mapPromise;
+
+          mapEl.classList.add("is-loading");
+          mapPromise = loadLeaflet()
+            .then(() => initTripMap())
+            .catch(() => {
+              mapEl.classList.remove("is-loading");
+              mapEl.innerHTML =
+                '<div class="box warn">โหลดแผนที่ในไฟล์ไม่ได้บนแอป/เบราว์เซอร์นี้ ให้ใช้ปุ่มด้านล่างเปิด Google Maps แทน หรืออัปขึ้น Vercel แล้วเปิดผ่าน https</div>';
+              return (id) => {
+                const place = tripPlaces.find((item) => item.id === id);
+                if (place) window.open(googleMapsUrl(place), "_blank", "noopener");
+              };
+            });
+          return mapPromise;
+        }
+
+        setMapPlaceOpener((id) => {
+          ensureMap().then((openPlace) => openPlace?.(id));
+        });
+
+        if (!("IntersectionObserver" in window)) {
+          ensureMap();
+          return;
+        }
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            if (!entries.some((entry) => entry.isIntersecting)) return;
+            observer.disconnect();
+            ensureMap();
+          },
+          { rootMargin: "160px 0px" },
+        );
+        observer.observe(mapEl);
       }
 
       function setupSmoothDetails() {
@@ -2554,116 +2544,155 @@
       function setupMascotScroller() {
         const mascot = document.querySelector(".mascot-scroll");
         if (!mascot) return;
-
-        const reduceMotion = window.matchMedia(
-          "(prefers-reduced-motion: reduce)",
-        ).matches;
-        const neutralFrames = [0, 1, 2, 3, 4, 5, 6, 7];
-        const downFrames = [8, 9, 10, 11, 12, 13, 14, 15];
-        const upFrames = [16, 17, 18, 19, 20, 21, 22, 23];
-        let idleIndex = 0;
-        let idleTimer = null;
-        let actionTimer = null;
-        let scrollStopTimer = null;
-        let currentFrame = 0;
+        const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+        let blinkTimer = null;
+        let settleTimer = null;
+        let scrollFrame = null;
         let lastScrollY = window.scrollY;
-        let activeDirection = null;
+        let activeAction = null;
+        let actionTimer = null;
+        // Body bounds measured from the original sprite, excluding the balloon.
+        const bodyBounds = [
+          [121, 429, 609], [123, 429, 609], [123, 429, 609], [121, 429, 609],
+          [121.5, 429, 609], [122.5, 429, 609], [122, 429, 610], [122.5, 429, 609],
+          [122, 429, 609], [121.5, 429, 609], [121.5, 430, 608], [121.5, 429, 609],
+          [122.5, 429, 608], [121, 429, 608], [120, 429, 609], [123, 429, 608],
+          [109, 428, 610], [109, 434, 609], [105.5, 435, 610], [108.5, 417, 610],
+          [110, 440, 608], [113, 406, 610], [109.5, 430, 608], [107, 426, 609],
+        ];
+        const actionFrames = {
+          "is-descending": [8, 9, 10, 11, 12, 13, 14, 15],
+          "is-flying": [0, 1, 2, 3],
+          "is-greeting": [0, 1, 4, 5, 6, 7, 1, 0],
+        };
 
+        const canAnimate = () =>
+          !motion.matches && !isPerformanceMode() && !document.hidden;
+
+        function setFrame(frame) {
+          const [center, , feet] = bodyBounds[frame];
+          mascot.style.setProperty("--mascot-x", 0.5 - frame - center / 244);
+          mascot.style.setProperty("--mascot-y", 1.55 - (feet + 6) / 244 - 0.02);
+        }
+
+        function setSwimFrame(frame) {
+          // Anchor the eyes, not the moving feet; use one scale for all four poses.
+          const centers = [311, 816.5, 1337.5, 1837];
+          mascot.style.setProperty("--mascot-swim-x", 0.5 - centers[frame] * 4.24 / 2172);
+        }
+
+        function setEyes(closed) {
+          setFrame(closed ? 2 : 0);
+        }
+
+        function scheduleBlink() {
+          window.clearTimeout(blinkTimer);
+          if (!canAnimate() || activeAction) return;
+          blinkTimer = window.setTimeout(() => {
+            if (!canAnimate() || activeAction) return;
+            setEyes(true);
+            blinkTimer = window.setTimeout(() => {
+              setEyes(false);
+              scheduleBlink();
+            }, 120);
+          }, 2600 + Math.random() * 2200);
+        }
+
+        function settle() {
+          window.clearTimeout(settleTimer);
+          window.clearInterval(actionTimer);
+          actionTimer = null;
+          activeAction = null;
+          mascot.classList.remove("is-flying", "is-descending", "is-greeting", "is-landing", "has-swim-art");
+          setFrame(0);
+          scheduleBlink();
+        }
+
+        function finishAction() {
+          if (!canAnimate() || activeAction === "is-greeting") {
+            settle();
+            return;
+          }
+          const transform = window.getComputedStyle(mascot, "::before").transform;
+          window.clearInterval(actionTimer);
+          actionTimer = null;
+          mascot.style.setProperty("--mascot-landing-from", transform);
+          mascot.classList.remove("is-flying", "is-descending");
+          activeAction = "is-landing";
+          mascot.classList.add("is-landing");
+          settleTimer = window.setTimeout(settle, 340);
+        }
+
+        function act(action, duration) {
+          if (!canAnimate()) return;
+          window.clearTimeout(settleTimer);
+          if (activeAction !== action) {
+            settle();
+            window.clearTimeout(blinkTimer);
+            activeAction = action;
+            mascot.classList.add(action);
+            mascot.classList.toggle("has-swim-art", action === "is-flying");
+            const frames = actionFrames[action];
+            const renderFrame = action === "is-flying" ? setSwimFrame : setFrame;
+            let index = 0;
+            renderFrame(frames[index]);
+            if (frames.length > 1) actionTimer = window.setInterval(() => {
+              index = (index + 1) % frames.length;
+              renderFrame(frames[index]);
+            }, action === "is-flying" ? 140 : action === "is-descending" ? 175 : 85);
+          }
+          settleTimer = window.setTimeout(finishAction, duration);
+        }
+
+        mascot.addEventListener("pointerenter", () => {
+          if (!activeAction) act("is-greeting", 720);
+        });
+        mascot.addEventListener("focus", () => {
+          if (!activeAction) act("is-greeting", 720);
+        });
         mascot.addEventListener("click", () => {
-          playScrollAction("up");
+          act("is-flying", 1100);
           window.scrollTo({
             top: 0,
-            behavior: reduceMotion ? "auto" : "smooth",
+            behavior: motion.matches || isPerformanceMode() ? "instant" : "smooth",
           });
         });
 
-        function setFrame(frame) {
-          currentFrame = frame;
-          mascot.style.setProperty(
-            "--mascot-offset",
-            `${frame * mascot.offsetWidth * -1}px`,
-          );
-        }
-
-        function startIdle() {
-          if (reduceMotion || idleTimer) return;
-
-          idleTimer = window.setInterval(() => {
-            idleIndex = (idleIndex + 1) % neutralFrames.length;
-            setFrame(neutralFrames[idleIndex]);
-          }, 1400);
-        }
-
-        function stopAction() {
-          window.clearInterval(actionTimer);
-          actionTimer = null;
-          activeDirection = null;
-          mascot.classList.remove("is-scrolling", "is-flying", "is-stomping");
-          idleIndex = 0;
-          setFrame(neutralFrames[0]);
-          startIdle();
-        }
-
-        function playScrollAction(direction) {
-          const actionClass = direction === "down" ? "is-stomping" : "is-flying";
-          const stopDelay = actionClass === "is-flying" ? 1100 : 520;
-
-          if (reduceMotion || isPerformanceMode()) {
-            mascot.classList.remove("is-flying", "is-stomping");
-            mascot.classList.add("is-scrolling", actionClass);
-            setFrame(direction === "down" ? downFrames[0] : upFrames[0]);
-            window.clearTimeout(scrollStopTimer);
-            scrollStopTimer = window.setTimeout(stopAction, stopDelay);
+        window.addEventListener("scroll", () => {
+          if (!canAnimate()) {
+            lastScrollY = window.scrollY;
             return;
           }
+          if (scrollFrame !== null) return;
+          scrollFrame = window.requestAnimationFrame(() => {
+            scrollFrame = null;
+            const delta = window.scrollY - lastScrollY;
+            lastScrollY = window.scrollY;
+            if (delta === 0) return;
+            act(delta > 0 ? "is-descending" : "is-flying", 220);
+          });
+        }, { passive: true });
 
-          if (activeDirection === direction && actionTimer) return;
-
-          const frames = direction === "down" ? downFrames : upFrames;
-          window.clearInterval(idleTimer);
-          window.clearInterval(actionTimer);
-          idleTimer = null;
-          activeDirection = direction;
-          mascot.classList.remove("is-flying", "is-stomping");
-          mascot.classList.add("is-scrolling", actionClass);
-
-          let frameIndex = 0;
-          setFrame(frames[frameIndex]);
-          actionTimer = window.setInterval(() => {
-            frameIndex = (frameIndex + 1) % frames.length;
-            setFrame(frames[frameIndex]);
-          }, 135);
+        function syncMotion() {
+          window.clearTimeout(blinkTimer);
+          if (scrollFrame !== null) window.cancelAnimationFrame(scrollFrame);
+          scrollFrame = null;
+          settle();
+          setEyes(false);
+          lastScrollY = window.scrollY;
+          mascot.classList.toggle("is-paused", !canAnimate());
+          scheduleBlink();
         }
-
-        window.addEventListener(
-          "scroll",
-          () => {
-            const currentScrollY = window.scrollY;
-            const delta = currentScrollY - lastScrollY;
-            lastScrollY = currentScrollY;
-
-            if (Math.abs(delta) < 2) return;
-
-            playScrollAction(delta > 0 ? "down" : "up");
-            window.clearTimeout(scrollStopTimer);
-            scrollStopTimer = window.setTimeout(
-              stopAction,
-              delta > 0 ? 520 : 1100,
-            );
-          },
-          { passive: true },
-        );
-        window.addEventListener("resize", () => {
-          setFrame(currentFrame);
-        });
-        setFrame(neutralFrames[0]);
-        startIdle();
+        document.addEventListener("trip-display-mode-change", syncMotion);
+        document.addEventListener("visibilitychange", syncMotion);
+        motion.addEventListener("change", syncMotion);
+        syncMotion();
       }
 
       setupDisplayMode();
       setupSmoothDetails();
       setupMascotScroller();
-      initTripMap();
+      setupLazyMap();
     </script>
   </body>
 </html>
