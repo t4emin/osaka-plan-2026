@@ -55,7 +55,7 @@
   pointer-events: none;
 }
 .mascot-art[data-sprite="balloon"] {
-  background-image: url("./assets/mascot-balloon-active.webp?v=short-arms-1");
+  background-image: url("./assets/mascot-balloon-active.webp?v=color-match-2");
   background-size: calc(var(--mascot-width) * 4.24) auto;
   background-position:
     calc(var(--mascot-width) * var(--mascot-balloon-x))

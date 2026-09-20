@@ -1,5 +1,21 @@
 Generated with the built-in image_gen tool.
-Latest revision: shorter, rounded free arms in all four frames.
+
+Latest color correction prompt:
+Use case: precise-object-edit. Image 1 is the EDIT TARGET four-frame balloon sprite. Image 2 is the exact normal mascot color reference. Recolor ONLY the mint skin on all four bodies, faces, arms and feet. Current target skin median RGB(134,218,197), #86DAC5 is visibly TOO LIGHT. Required skin median is RGB(118,203,186), #76CBBA, sampled from reference. Specifically darken target mint fill by about R=-16 G=-15 B=-11, keeping flat low-contrast shading. Body fill should closely match #76CBBA across every frame, not pastel #86DAC5. Keep belly scale marks, blue fins, pink lips, eyes, navy outlines, red balloon/string exactly unchanged. Preserve every pose, body and eye location, short arms, legs, canvas dimensions and alpha transparency. No new geometry, no new highlights, no background. Output the same four-frame horizontal sprite with corrected, darker mint body colors.
+
+Runtime WebP belly median RGB check:
+Normal: (118, 203, 186).
+Balloon frames: (114, 201, 184), (114, 200, 184), (113, 200, 182), (114, 200, 184).
+Measurements exclude transparent, outline, and non-mint pixels. The colors are
+close, not pixel-identical; frame shading remains slightly different.
+
+Earlier revisions:
+Latest revision: match the normal mascot's mint skin and five belly scale marks; preserve short arms.
+
+Latest revision prompt:
+Use case: precise-object-edit. Image 1 is the EDIT TARGET: four-frame transparent balloon mascot animation sheet. Image 2 is the IDENTITY AND COLOR REFERENCE: the normal standing mascot cropped from the existing website sprite. Make the balloon fish look like the SAME character as image 2. Change ONLY the turquoise skin color and add the missing belly scale marks. Match image 2's softer lighter mint-green/turquoise skin exactly, with its mostly flat soft fill; remove the stronger cyan cast and glossy/shaded gradient of image 1. Match the blue fins and pink mouth palette to image 2 too. On EVERY belly add the same small teal curved U-shaped scale strokes as image 2: three small shallow curved scales in the upper row and two staggered below, centered on the belly, in a muted darker teal. The marks must stay identical in position and size across frames, gently rounded thin strokes, not large dark scales. Preserve image 1's exact canvas dimensions 2172x724, FOUR frame positions, scale, face and eye placement, short stubby free arms and their four paddling poses, alternating feet, upright body, red balloon and string and hand holding string. Do not lengthen arms or lean the body. Keep transparent alpha background with no background, no panel borders, no text. This is only a color-match and missing belly markings correction; preserve all animation geometry.
+
+Previous revision: shorter, rounded free arms in all four frames.
 Runtime image: assets/mascot-balloon-active.webp
 
 Revision prompt:

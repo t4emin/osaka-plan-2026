@@ -31,7 +31,7 @@
   const centers = [121, 123, 123, 121, 121.5, 122.5, 122, 122.5, 122, 121.5, 121.5, 121.5, 122.5, 121, 120, 123];
   const feet = [609, 609, 609, 609, 609, 609, 610, 609, 609, 609, 608, 609, 608, 608, 609, 608];
   // Measured eye centers keep the head still while the free arm and feet paddle.
-  const balloonEyes = [[281.72, 412.48], [797.86, 411.96], [1327.63, 412.2], [1839.65, 412.56]];
+  const balloonEyes = [[282.31, 411.71], [801.75, 411.75], [1342.12, 412.03], [1873.93, 413.32]];
   let frame = -1;
   let raf = null;
   let lastTick = 0;
