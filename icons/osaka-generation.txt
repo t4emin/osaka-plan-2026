@@ -1,0 +1,6 @@
+Generated with the built-in image_gen tool.
+Master: icons/osaka-source.png
+Derived sizes: sips resampling; maskable variant adds safe-area padding.
+
+Final prompt:
+Use case: logo-brand. Edit target: the existing JP Trip app icon supplied. Create a polished square app icon for an Osaka travel guide. Keep the existing friendly turquoise fish mascot identity, expressive big eyes, white Japanese headband, thick dark navy outlines, and red/white/turquoise palette. Redesign the composition so it unmistakably evokes Osaka: replace Mount Fuji entirely with a prominent simplified Osaka Castle, ivory walls, layered mint-green sweeping roofs, small gold accents. The castle occupies the upper central area and the fish peeks up in the lower foreground, with both clearly legible. No mountain. Bold clean flat illustration, minimal shapes, crisp edges, no tiny decorative clutter, no text, no letters, no watermark, no mockup. Use a full-bleed warm ivory square background, with a red sun disk behind the castle and mascot; no rounded outer corners, no transparent corners. Keep the essential castle and fish face within the central circular mask-safe area (80% of square width), with generous outer breathing room. Output one finished 1024x1024 icon.
