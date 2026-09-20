@@ -2500,15 +2500,20 @@
       function setupSmoothDetails() {
         const reduceMotion = window.matchMedia(
           "(prefers-reduced-motion: reduce)",
-        ).matches;
+        );
+        const mobileDetails = window.matchMedia(
+          "(max-width: 700px), (pointer: coarse)",
+        );
 
         document.querySelectorAll("details").forEach((details) => {
           const summary = details.querySelector("summary");
 
-          if (!summary || reduceMotion) return;
+          if (!summary) return;
 
           summary.addEventListener("click", (event) => {
-            if (isPerformanceMode()) return;
+            // Use native toggling on mobile to avoid laying out the page
+            // on every frame of a height animation.
+            if (isPerformanceMode() || reduceMotion.matches || mobileDetails.matches) return;
 
             event.preventDefault();
 
