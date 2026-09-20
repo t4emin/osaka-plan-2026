@@ -1,0 +1,175 @@
+.mascot-dock {
+  --mascot-width: 96px;
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  width: var(--mascot-width);
+  height: var(--mascot-width);
+  z-index: 90;
+  isolation: isolate;
+}
+.mascot-button {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.mascot-button:focus-visible {
+  outline: 3px solid #1769ff;
+  outline-offset: 4px;
+  border-radius: 18px;
+}
+.mascot-motion {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 85%;
+  pointer-events: none;
+}
+.mascot-art {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 155%;
+  background-image: url("./assets/mascot-sprite.webp");
+  background-repeat: no-repeat;
+  background-size: calc(var(--mascot-width) * 24) auto;
+  background-position:
+    calc(var(--mascot-width) * var(--mascot-x, 0.0041))
+    calc(var(--mascot-width) * var(--mascot-y, -0.991));
+  transform-origin: 50% 95%;
+  animation: mascot-breathe 3.6s ease-in-out infinite;
+}
+.mascot-shadow {
+  position: absolute;
+  left: 24%;
+  bottom: 1px;
+  width: 52%;
+  height: 7px;
+  border-radius: 50%;
+  background: #d2d9cd;
+  pointer-events: none;
+}
+.mascot-art[data-sprite="balloon"] {
+  background-image: url("./assets/mascot-balloon-active.webp?v=short-arms-1");
+  background-size: calc(var(--mascot-width) * 4.24) auto;
+  background-position:
+    calc(var(--mascot-width) * var(--mascot-balloon-x))
+    calc(var(--mascot-width) * var(--mascot-balloon-y));
+  animation: none;
+}
+.mascot-speech {
+  position: absolute;
+  right: 14px;
+  bottom: calc(100% + 13px);
+  width: max-content;
+  max-width: min(200px, calc(100vw - 40px));
+  padding: 8px 12px;
+  border: 1px solid #dbe3da;
+  border-radius: 14px 14px 4px 14px;
+  background: #fffef8;
+  color: #294954;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+.mascot-dock[data-speaking="true"] .mascot-speech {
+  opacity: 1;
+  transform: translateY(0);
+}
+.mascot-prop {
+  position: absolute;
+  left: 22%;
+  bottom: 0;
+  width: 56%;
+  height: 36%;
+  opacity: 0;
+  transform: translateY(7px) scale(.85);
+  transition: opacity 160ms ease, transform 220ms ease;
+}
+.mascot-dock[data-state="snack"] .mascot-snack,
+.mascot-dock[data-state="map"] .mascot-map,
+.mascot-dock[data-state="photo"] .mascot-camera,
+.mascot-dock[data-state="bye"] .mascot-suitcase {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.mascot-steam {
+  animation: mascot-steam 1.4s ease-in-out infinite;
+  animation-play-state: paused;
+}
+[data-state="snack"] .mascot-steam { animation-play-state: running; }
+[data-state="snack"] .mascot-snack { animation: mascot-nibble 900ms ease-in-out 2 900ms; }
+[data-state="map"] .mascot-map { animation: mascot-read-map 2.6s ease-in-out both; }
+.mascot-camera { bottom: 8%; }
+.mascot-flash { opacity: 0; }
+[data-state="photo"] .mascot-flash { animation: mascot-flash 2.2s linear both; }
+.mascot-suitcase { left: -13%; bottom: -1%; width: 42%; height: 48%; }
+.mascot-bubbles,
+.mascot-sleep { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+.mascot-bubbles i {
+  position: absolute;
+  right: 9%;
+  top: 32%;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #54a9c6;
+  border-radius: 50%;
+  opacity: 0;
+}
+.mascot-bubbles i:nth-child(2) { right: 25%; width: 7px; height: 7px; animation-delay: .25s; }
+.mascot-bubbles i:nth-child(3) { right: -1%; width: 14px; height: 14px; animation-delay: .55s; }
+[data-state="bubble"] .mascot-bubbles { opacity: 1; }
+[data-state="bubble"] .mascot-bubbles i { animation-name: mascot-bubble; animation-duration: 1.8s; animation-iteration-count: infinite; }
+.mascot-sleep { color: #547583; font: 800 17px/1 sans-serif; }
+.mascot-sleep span { position: absolute; right: 8%; top: 0; }
+.mascot-sleep span + span { right: -2%; top: -12%; font-size: 12px; }
+[data-state="sleep"] .mascot-sleep { opacity: 1; animation: mascot-dream 3s ease-in-out infinite; }
+[data-state="sleep"] .mascot-art { animation-duration: 5s; }
+[data-state="spin"] .mascot-art { animation: mascot-spin 1.15s cubic-bezier(.2,.7,.25,1) both; }
+[data-state="swim"] .mascot-art { animation: mascot-paddle .5s ease-in-out infinite; }
+[data-state="snack"] .mascot-art { animation: mascot-chew .45s ease-in-out infinite; }
+[data-paused="true"] *, [data-paused="true"] *::before { animation-play-state: paused !important; }
+@keyframes mascot-breathe {
+  0%, 100% { transform: translateY(0) scale(1, 1); }
+  50% { transform: translateY(-2px) scale(1.015, 1.025); }
+}
+@keyframes mascot-paddle {
+  0%, 100% { transform: scale(1.02, .99); }
+  50% { transform: scale(.99, 1.02); }
+}
+@keyframes mascot-spin {
+  0% { transform: scale(1); }
+  12% { transform: scale(1.12, .86); }
+  65% { transform: translateY(-14px) rotate(350deg) scale(.94, 1.06); }
+  85% { transform: translateY(1px) rotate(360deg) scale(1.08, .94); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+@keyframes mascot-chew { 50% { transform: scale(1.025, .985); } }
+@keyframes mascot-nibble { 50% { transform: translateY(-6px) rotate(-4deg); } }
+@keyframes mascot-steam { 0%, 100% { opacity: .3; transform: translateY(2px); } 50% { opacity: .8; transform: translateY(-3px); } }
+@keyframes mascot-read-map { 0%, 38% { transform: rotate(180deg); } 64%, 100% { transform: rotate(0); } }
+@keyframes mascot-flash { 0%, 51%, 61%, 100% { opacity: 0; } 54%, 57% { opacity: 1; } }
+@keyframes mascot-bubble { 0% { opacity: 0; transform: translate(0, 0) scale(.6); } 20% { opacity: .85; } 100% { opacity: 0; transform: translate(-7px, -55px) scale(1.2); } }
+@keyframes mascot-dream { 50% { transform: translateY(-5px) rotate(5deg); opacity: .5; } }
+@media (max-width: 700px) {
+  .mascot-dock {
+    --mascot-width: 80px;
+    right: max(10px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mascot-dock *, .mascot-dock *::before { animation: none !important; transition: none !important; }
+}

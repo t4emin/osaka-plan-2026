@@ -17,6 +17,9 @@
       sizes="180x180"
       href="./icons/apple-touch-icon.png?v=osaka-1"
     />
+    <link rel="stylesheet" href="./mascot.css?v=short-arms-1" />
+    <link rel="preload" as="image" href="./assets/mascot-balloon-active.webp?v=short-arms-1" fetchpriority="low" />
+    <script src="./mascot.js?v=short-arms-1" defer></script>
     <style>
       @font-face {
         font-family: "Trip Sans Thai";
@@ -574,135 +577,6 @@
         line-height: 1.6;
         padding: 20px 0;
       }
-      .mascot-scroll {
-        --mascot-width: 92px;
-        --mascot-x: 0;
-        --mascot-y: -0.991;
-        appearance: none;
-        border: 0;
-        padding: 0;
-        background: transparent;
-        position: fixed;
-        right: max(16px, env(safe-area-inset-right));
-        bottom: max(14px, env(safe-area-inset-bottom));
-        z-index: 90;
-        width: var(--mascot-width);
-        height: var(--mascot-width);
-        cursor: pointer;
-        touch-action: manipulation;
-      }
-      .mascot-scroll:focus-visible {
-        outline: 3px solid rgba(23, 105, 255, 0.42);
-        outline-offset: 6px;
-        border-radius: 18px;
-      }
-      .mascot-scroll::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        width: 100%;
-        height: 155%;
-        z-index: 1;
-        background-image: url("assets/mascot-sprite.png");
-        background-image: image-set(
-          url("assets/mascot-sprite.webp") type("image/webp"),
-          url("assets/mascot-sprite.png") type("image/png")
-        );
-        background-repeat: no-repeat;
-        /* All poses use the same pixel scale; align only their center and feet. */
-        background-size: calc(var(--mascot-width) * 24) auto;
-        background-position:
-          calc(var(--mascot-width) * var(--mascot-x))
-          calc(var(--mascot-width) * var(--mascot-y));
-        transform-origin: 50% 90%;
-        animation: mascot-idle 3.8s ease-in-out infinite;
-      }
-      .mascot-scroll .mascot-shadow {
-        position: absolute;
-        left: 22%;
-        right: 22%;
-        bottom: 0;
-        height: 7px;
-        border-radius: 50%;
-        background: rgba(17, 24, 39, 0.15);
-        animation: mascot-shadow-idle 3.8s ease-in-out infinite;
-      }
-      .mascot-scroll.is-flying::before {
-        animation: mascot-fly 900ms ease-in-out infinite;
-      }
-      .mascot-scroll.has-swim-art::before {
-        background-image: url("assets/mascot-balloon-swim.png");
-        background-image: image-set(
-          url("assets/mascot-balloon-swim.webp") type("image/webp"),
-          url("assets/mascot-balloon-swim.png") type("image/png")
-        );
-        background-size: calc(var(--mascot-width) * 4.24) auto;
-        background-position:
-          calc(var(--mascot-width) * var(--mascot-swim-x, -0.107))
-          calc(var(--mascot-width) * 0.28);
-      }
-      .mascot-scroll.is-descending::before {
-        animation: mascot-descend 1400ms ease-in-out infinite;
-      }
-      .mascot-scroll.is-landing::before {
-        animation: mascot-land 320ms ease-out both;
-      }
-      .mascot-scroll.is-greeting::before {
-        animation: mascot-greet 700ms ease-in-out;
-      }
-      .mascot-scroll.is-flying .mascot-shadow {
-        animation: mascot-shadow-hop 900ms ease-in-out infinite;
-      }
-      .mascot-scroll.is-descending .mascot-shadow {
-        animation: mascot-shadow-glide 1400ms ease-in-out infinite;
-      }
-      .mascot-scroll.is-landing .mascot-shadow {
-        animation: mascot-shadow-land 320ms ease-out both;
-      }
-      .mascot-scroll.is-paused::before,
-      .mascot-scroll.is-paused .mascot-shadow {
-        animation-play-state: paused;
-      }
-      @keyframes mascot-idle {
-        0%, 100% { transform: translateY(0) rotate(-1deg); }
-        50% { transform: translateY(-4px) rotate(1deg); }
-      }
-      @keyframes mascot-fly {
-        0%, 100% { transform: translate(-2px, -15px) rotate(-2deg); }
-        50% { transform: translate(2px, -20px) rotate(2deg); }
-      }
-      @keyframes mascot-descend {
-        0%, 100% { transform: translate(-4px, -18px) rotate(-5deg); }
-        50% { transform: translate(4px, -12px) rotate(5deg); }
-      }
-      @keyframes mascot-land {
-        from { transform: var(--mascot-landing-from); }
-        to { transform: translate(0, 0) rotate(0); }
-      }
-      @keyframes mascot-shadow-glide {
-        0%, 100% { opacity: 0.3; transform: scaleX(0.65); }
-        50% { opacity: 0.45; transform: scaleX(0.75); }
-      }
-      @keyframes mascot-shadow-land {
-        0% { opacity: 0.2; transform: scaleX(0.55); }
-        70% { opacity: 0.6; transform: scaleX(0.85); }
-        100% { opacity: 0.8; transform: scaleX(1); }
-      }
-      @keyframes mascot-greet {
-        0%, 100% { transform: translateY(0) rotate(0); }
-        25% { transform: translateY(-6px) rotate(-7deg); }
-        55% { transform: translateY(-6px) rotate(7deg); }
-        80% { transform: translateY(-2px) rotate(-3deg); }
-      }
-      @keyframes mascot-shadow-idle {
-        0%, 100% { opacity: 0.8; transform: scaleX(1); }
-        50% { opacity: 0.6; transform: scaleX(0.9); }
-      }
-      @keyframes mascot-shadow-hop {
-        0%, 100% { opacity: 0.8; transform: scaleX(1); }
-        50% { opacity: 0.3; transform: scaleX(0.65); }
-      }
       @media (max-width: 700px) {
         .map-layout {
           grid-template-columns: 1fr;
@@ -713,19 +587,10 @@
         .map-actions {
           max-height: 220px;
         }
-        .mascot-scroll {
-          --mascot-width: 76px;
-          right: max(10px, env(safe-area-inset-right));
-          bottom: max(10px, env(safe-area-inset-bottom));
-        }
       }
       @media (prefers-reduced-motion: reduce) {
         html {
           scroll-behavior: auto;
-        }
-        .mascot-scroll::before,
-        .mascot-scroll .mascot-shadow {
-          animation: none !important;
         }
       }
       @media (max-width: 1120px) {
@@ -1556,14 +1421,41 @@
         </main>
       </div>
     </div>
-    <button
-      class="mascot-scroll"
-      type="button"
-      aria-label="Scroll to top"
-      title="Scroll to top"
-    >
-      <span class="mascot-shadow" aria-hidden="true"></span>
-    </button>
+    <div class="mascot-dock" data-state="idle" data-speaking="false">
+      <span class="mascot-speech" role="status" aria-live="polite"></span>
+      <button class="mascot-button" type="button" aria-label="ทักทายน้องปลา — แตะเพื่อเล่นด้วยกัน" title="แตะเล่นกับน้องปลา">
+        <span class="mascot-shadow" aria-hidden="true"></span>
+        <span class="mascot-motion" aria-hidden="true">
+          <span class="mascot-art"></span>
+          <svg class="mascot-prop mascot-snack" viewBox="0 0 100 64" fill="none">
+            <g class="mascot-steam" stroke="#9b8270" stroke-width="2.5" stroke-linecap="round"><path d="M29 19c-7-5 6-8 0-14M52 16c-7-5 6-8 0-13M74 19c-7-5 6-8 0-14"/></g>
+            <path d="m5 39 10 20h70l10-20" fill="#efba72" stroke="#68422a" stroke-width="3" stroke-linejoin="round"/>
+            <g fill="#c87832" stroke="#754125" stroke-width="2.5"><circle cx="26" cy="34" r="14"/><circle cx="50" cy="31" r="15"/><circle cx="75" cy="34" r="14"/></g>
+            <path d="m16 32 16-3-13 10 14-3m8-7 17-3-14 11 15-3m6-2 15-3-12 10 14-3" stroke="#fff1b8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="m23 24 4 2m22-7 3 3m20 2 4-1m-29 15 4 2" stroke="#3f8051" stroke-width="3" stroke-linecap="round"/>
+            <path d="M9 45h82" stroke="#68422a" stroke-width="3"/>
+          </svg>
+          <svg class="mascot-prop mascot-map" viewBox="0 0 100 64" fill="none" stroke-linejoin="round">
+            <path d="m8 9 28 6L64 8l28 7v43l-28-7-28 7-28-7Z" fill="#fff3d6" stroke="#294954" stroke-width="3"/>
+            <path d="M36 15v43M64 8v43" stroke="#d0bb8b" stroke-width="2"/>
+            <path d="m12 39 20-15 16 18 23-20 17 6" stroke="#7fc8bf" stroke-width="6"/>
+            <path d="M76 21c0 7-9 15-9 15s-9-8-9-15a9 9 0 1 1 18 0Z" fill="#ef1741" stroke="#fff3d6" stroke-width="2"/><circle cx="67" cy="21" r="3" fill="#fff3d6"/>
+          </svg>
+          <svg class="mascot-prop mascot-camera" viewBox="0 0 100 64" fill="none" stroke="#294954" stroke-width="3">
+            <path d="m33 17 5-8h26l5 8" fill="#69848f"/><rect x="12" y="17" width="76" height="41" rx="9" fill="#45616d"/>
+            <circle cx="51" cy="37" r="17" fill="#d3e7e8"/><circle cx="51" cy="37" r="11" fill="#263c54"/><circle cx="47" cy="33" r="4" fill="#88d6e6" stroke="none"/>
+            <rect x="73" y="23" width="9" height="7" rx="2" fill="#ffe3a0" stroke="none"/>
+            <path class="mascot-flash" d="m77 0 3 10 11-4-7 9 12 5-13 1-1 11-6-10-10 6 5-11-11-4 12-3Z" fill="#ffe880" stroke="#fff9dc" stroke-width="2"/>
+          </svg>
+          <svg class="mascot-prop mascot-suitcase" viewBox="0 0 50 70" fill="none" stroke="#294954" stroke-width="3">
+            <path d="M18 21V6h14v15"/><rect x="7" y="20" width="37" height="42" rx="7" fill="#f4bd67"/><path d="M18 29v24m15-24v24" stroke="#cf8940"/>
+            <circle cx="15" cy="65" r="3" fill="#294954"/><circle cx="37" cy="65" r="3" fill="#294954"/><rect x="21" y="34" width="14" height="11" rx="2" fill="#fff7df" stroke="none"/><circle cx="28" cy="39.5" r="3" fill="#ef1741" stroke="none"/>
+          </svg>
+          <span class="mascot-bubbles"><i></i><i></i><i></i></span>
+          <span class="mascot-sleep"><span>z</span><span>z</span></span>
+        </span>
+      </button>
+    </div>
     <script>
       const tripPlaces = [
         {
@@ -2121,155 +2013,7 @@
         });
       }
 
-      function setupMascotScroller() {
-        const mascot = document.querySelector(".mascot-scroll");
-        if (!mascot) return;
-        const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-        let blinkTimer = null;
-        let settleTimer = null;
-        let scrollFrame = null;
-        let lastScrollY = window.scrollY;
-        let activeAction = null;
-        let actionTimer = null;
-        // Body bounds measured from the original sprite, excluding the balloon.
-        const bodyBounds = [
-          [121, 429, 609], [123, 429, 609], [123, 429, 609], [121, 429, 609],
-          [121.5, 429, 609], [122.5, 429, 609], [122, 429, 610], [122.5, 429, 609],
-          [122, 429, 609], [121.5, 429, 609], [121.5, 430, 608], [121.5, 429, 609],
-          [122.5, 429, 608], [121, 429, 608], [120, 429, 609], [123, 429, 608],
-          [109, 428, 610], [109, 434, 609], [105.5, 435, 610], [108.5, 417, 610],
-          [110, 440, 608], [113, 406, 610], [109.5, 430, 608], [107, 426, 609],
-        ];
-        const actionFrames = {
-          "is-descending": [8, 9, 10, 11, 12, 13, 14, 15],
-          "is-flying": [0, 1, 2, 3],
-          "is-greeting": [0, 1, 4, 5, 6, 7, 1, 0],
-        };
-
-        const canAnimate = () =>
-          !motion.matches && !document.hidden;
-
-        function setFrame(frame) {
-          const [center, , feet] = bodyBounds[frame];
-          mascot.style.setProperty("--mascot-x", 0.5 - frame - center / 244);
-          mascot.style.setProperty("--mascot-y", 1.55 - (feet + 6) / 244 - 0.02);
-        }
-
-        function setSwimFrame(frame) {
-          // Anchor the eyes, not the moving feet; use one scale for all four poses.
-          const centers = [311, 816.5, 1337.5, 1837];
-          mascot.style.setProperty("--mascot-swim-x", 0.5 - centers[frame] * 4.24 / 2172);
-        }
-
-        function setEyes(closed) {
-          setFrame(closed ? 2 : 0);
-        }
-
-        function scheduleBlink() {
-          window.clearTimeout(blinkTimer);
-          if (!canAnimate() || activeAction) return;
-          blinkTimer = window.setTimeout(() => {
-            if (!canAnimate() || activeAction) return;
-            setEyes(true);
-            blinkTimer = window.setTimeout(() => {
-              setEyes(false);
-              scheduleBlink();
-            }, 120);
-          }, 2600 + Math.random() * 2200);
-        }
-
-        function settle() {
-          window.clearTimeout(settleTimer);
-          window.clearInterval(actionTimer);
-          actionTimer = null;
-          activeAction = null;
-          mascot.classList.remove("is-flying", "is-descending", "is-greeting", "is-landing", "has-swim-art");
-          setFrame(0);
-          scheduleBlink();
-        }
-
-        function finishAction() {
-          if (!canAnimate() || activeAction === "is-greeting") {
-            settle();
-            return;
-          }
-          const transform = window.getComputedStyle(mascot, "::before").transform;
-          window.clearInterval(actionTimer);
-          actionTimer = null;
-          mascot.style.setProperty("--mascot-landing-from", transform);
-          mascot.classList.remove("is-flying", "is-descending");
-          activeAction = "is-landing";
-          mascot.classList.add("is-landing");
-          settleTimer = window.setTimeout(settle, 340);
-        }
-
-        function act(action, duration) {
-          if (!canAnimate()) return;
-          window.clearTimeout(settleTimer);
-          if (activeAction !== action) {
-            settle();
-            window.clearTimeout(blinkTimer);
-            activeAction = action;
-            mascot.classList.add(action);
-            mascot.classList.toggle("has-swim-art", action === "is-flying");
-            const frames = actionFrames[action];
-            const renderFrame = action === "is-flying" ? setSwimFrame : setFrame;
-            let index = 0;
-            renderFrame(frames[index]);
-            if (frames.length > 1) actionTimer = window.setInterval(() => {
-              index = (index + 1) % frames.length;
-              renderFrame(frames[index]);
-            }, action === "is-flying" ? 140 : action === "is-descending" ? 175 : 85);
-          }
-          settleTimer = window.setTimeout(finishAction, duration);
-        }
-
-        mascot.addEventListener("pointerenter", () => {
-          if (!activeAction) act("is-greeting", 720);
-        });
-        mascot.addEventListener("focus", () => {
-          if (!activeAction) act("is-greeting", 720);
-        });
-        mascot.addEventListener("click", () => {
-          act("is-flying", 1100);
-          window.scrollTo({
-            top: 0,
-            behavior: motion.matches ? "instant" : "smooth",
-          });
-        });
-
-        window.addEventListener("scroll", () => {
-          if (!canAnimate()) {
-            lastScrollY = window.scrollY;
-            return;
-          }
-          if (scrollFrame !== null) return;
-          scrollFrame = window.requestAnimationFrame(() => {
-            scrollFrame = null;
-            const delta = window.scrollY - lastScrollY;
-            lastScrollY = window.scrollY;
-            if (delta === 0) return;
-            act(delta > 0 ? "is-descending" : "is-flying", 220);
-          });
-        }, { passive: true });
-
-        function syncMotion() {
-          window.clearTimeout(blinkTimer);
-          if (scrollFrame !== null) window.cancelAnimationFrame(scrollFrame);
-          scrollFrame = null;
-          settle();
-          setEyes(false);
-          lastScrollY = window.scrollY;
-          mascot.classList.toggle("is-paused", !canAnimate());
-          scheduleBlink();
-        }
-        document.addEventListener("visibilitychange", syncMotion);
-        motion.addEventListener("change", syncMotion);
-        syncMotion();
-      }
-
       setupSmoothDetails();
-      setupMascotScroller();
       setupLazyMap();
     </script>
   </body>
