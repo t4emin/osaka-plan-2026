@@ -763,7 +763,7 @@
       <section class="card" id="trip-map-section">
         <h2><span class="decorative-icon" aria-hidden="true">🗺️</span> Map / แผนที่</h2>
         <p>
-          แตะชื่อสถานที่เพื่อดูหมุด หรือเปิดต่อใน Google Maps
+          แตะชื่อสถานที่เพื่อดูหมุด หรือกดชื่อในรายการเพื่อนำทางด้วย Google Maps
         </p>
         <div class="map-layout">
           <div id="trip-map" aria-label="Osaka trip map"></div>
@@ -1749,11 +1749,12 @@
       ];
 
       function googleMapsUrl(place) {
-        // Coordinates always drop a pin; a text query ("name lat,lng") can match nothing.
-        const query = encodeURIComponent(
+        // Directions from the current location. Coordinates always resolve;
+        // a text query ("name lat,lng") can match nothing.
+        const destination = encodeURIComponent(
           place.query || `${place.lat},${place.lng}`,
         );
-        return `https://www.google.com/maps/search/?api=1&query=${query}`;
+        return `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=transit`;
       }
 
       const placeHours = {
@@ -1949,7 +1950,7 @@
             .bindPopup(
               `<b>${placeLabelHtml(place.label)}</b><br>${place.day}${mapHoursHtml(place)}<br><a class="map-popup-link" href="${googleMapsUrl(
                 place,
-              )}" target="_blank" rel="noopener">เปิดใน Google Maps</a>`,
+              )}" target="_blank" rel="noopener">นำทางด้วย Google Maps</a>`,
             );
           markers[place.id] = marker;
 
