@@ -1542,6 +1542,7 @@
         {
           id: "hotel",
           name: "ZONE SHINSAIBASHI WEST",
+          query: "ZONE SHINSAIBASHI WEST 大阪府大阪市西区北堀江1丁目22番20号",
           label: "🏨 Hotel",
           day: "Accommodation",
           lat: 34.6722,
@@ -1748,8 +1749,9 @@
       ];
 
       function googleMapsUrl(place) {
+        // Coordinates always drop a pin; a text query ("name lat,lng") can match nothing.
         const query = encodeURIComponent(
-          `${place.name} ${place.lat},${place.lng}`,
+          place.query || `${place.lat},${place.lng}`,
         );
         return `https://www.google.com/maps/search/?api=1&query=${query}`;
       }
