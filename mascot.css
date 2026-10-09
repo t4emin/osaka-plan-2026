@@ -21,7 +21,7 @@
 .mascot-button:focus-visible {
   outline: 3px solid #1769ff;
   outline-offset: 4px;
-  border-radius: 18px;
+  border-radius: 8px;
 }
 .mascot-motion {
   position: absolute;
@@ -70,7 +70,7 @@
   max-width: min(200px, calc(100vw - 40px));
   padding: 8px 12px;
   border: 1px solid #dbe3da;
-  border-radius: 14px 14px 4px 14px;
+  border-radius: 8px 8px 4px 8px;
   background: #fffef8;
   color: #294954;
   font-family: inherit;

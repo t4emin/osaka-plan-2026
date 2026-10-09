@@ -1,0 +1,4 @@
+# Personal booking documents (names, booking numbers) - never publish
+/docs/
+*.pdf
+.DS_Store
